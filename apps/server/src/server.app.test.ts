@@ -1,24 +1,19 @@
 import Server from "./server.app";
 import request from "supertest";
 import httpStatus from "http-status";
-import {LogManager} from "@splash/logger";
-import {IAppConfig} from "./server.config";
-
-const testConfig: IAppConfig = {
-  port: 8080,
-  corsUrl: "*",
-  nodeEnv:  'development',
-
-  logger: new LogManager({logLevel: 'debug'}, 'server.test')
-}
+import routes from "./routes";
+import testConfig from "./test.config";
 
 const server = new Server(testConfig);
 
-describe("Check @clueby/server-express", () => {
+describe("Check @splash/server", () => {
   beforeAll(async () => {
-    await server.bootstrap();
+    await server.bootstrap({ routes });
   });
   test("Check whether express.js server is initialized", (done) => {
     request(server.app).get("/").expect(httpStatus.OK, done);
   });
+  afterAll(async () => {
+    await server.teardown();
+  })
 });
