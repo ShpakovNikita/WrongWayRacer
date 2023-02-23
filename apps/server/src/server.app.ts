@@ -8,7 +8,8 @@ import express, {
 import { ILogManager } from '@splash/logger';
 import { createServer, Server } from "http"
 import { Server as SocketIOServer } from "socket.io";
-import {SocketHandler} from "./game/interface";
+import { SocketHandler} from "./game/interface";
+import {SharedDatabase} from "./game/database";
 
 class ExpressServerApp {
   private readonly _config: IAppConfig;
@@ -46,7 +47,7 @@ class ExpressServerApp {
     }
 
     if (handlers) {
-      const sharedDatabase = {}
+      const sharedDatabase = new SharedDatabase()
 
       this._socketIoServer.on('connection', (socket) => {
         const connectionDatabase = {}

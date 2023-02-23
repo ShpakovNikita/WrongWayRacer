@@ -25,6 +25,8 @@
     "dotenv": "^16.0.3",
     "http-status": "^1.6.2",
     "socket.io": "^4.6.1",
+    "tiny-typed-emitter": "^2.1.0",
+    "uuid": "^9.0.0",
     "tslib": "^2.4.1"
   },
   "devDependencies": {

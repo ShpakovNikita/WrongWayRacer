@@ -4,7 +4,7 @@ import {registerGameHandlers} from "./index";
 import {io as clientIo, Socket as ClientSocket} from "socket.io-client"
 import {Server as ServerIOServer, Socket as ServerSocket} from "socket.io"
 
-describe("Check socket game", () => {
+describe("Check sockets working", () => {
   const server = new Server(testConfig);
   let clientSocket: ClientSocket;
   let serverSocket: ServerSocket;

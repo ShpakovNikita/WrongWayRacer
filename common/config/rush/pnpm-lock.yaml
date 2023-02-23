@@ -56,10 +56,12 @@ importers:
       socket.io: ^4.6.1
       socket.io-client: ^4.6.1
       supertest: ^6.3.3
+      tiny-typed-emitter: ^2.1.0
       ts-jest: ^29.0.5
       ts-node: ^10.9.1
       tslib: ^2.4.1
       typescript: ^4.8.4
+      uuid: ^9.0.0
     dependencies:
       '@splash/logger': link:../../packages/node/logger
       compression: 1.7.4
@@ -69,7 +71,9 @@ importers:
       helmet: 5.1.1
       http-status: 1.6.2
       socket.io: 4.6.1
+      tiny-typed-emitter: 2.1.0
       tslib: 2.5.0
+      uuid: 9.0.0
     devDependencies:
       '@rushstack/heft': 0.48.9
       '@rushstack/heft-node-rig': 1.12.4_3f22cebb8042076a69ccd17bf58f6fa5
@@ -5862,6 +5866,10 @@ packages:
       globrex: 0.1.2
     dev: false
 
+  /tiny-typed-emitter/2.1.0:
+    resolution: {integrity: sha512-qVtvMxeXbVej0cQWKqVSSAHmKZEHAvxdF8HEUBFWts8h+xEo5m/lEiPakuyZ3BnCBjOD8i24kzNOiOLLgsSxhA==}
+    dev: false
+
   /tmpl/1.0.5:
     resolution: {integrity: sha512-3f0uOEAQwIqGuWW2MVzYg8fV/QNnc/IpuJNG837rLuczAaLVHslWHZQj4IGiEl5Hs3kkbhwL9Ab7Hrsmuj+Smw==}
     dev: true
@@ -6075,6 +6083,11 @@ packages:
   /utils-merge/1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+    dev: false
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
     dev: false
 
   /v8-compile-cache-lib/3.0.1:
