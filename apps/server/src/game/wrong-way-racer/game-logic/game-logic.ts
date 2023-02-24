@@ -1,6 +1,7 @@
 import {Vec2} from "@splash/types";
 import {PlayerDeathPayload, WrongWayRacerEvents} from "./game-logic.events";
 import {TypedEmitter} from "tiny-typed-emitter";
+import { v4 as uuidv4 } from 'uuid';
 
 export type WrongWayRacerGameLogicConfig = {
     timerSpeed: number;
@@ -13,12 +14,13 @@ export type WrongWayRacerGameLogicConfig = {
 }
 
 export type Car = {
+    id: string;
     position: Vec2;
 }
 
 export type Player = {
     road: number;
-    playerId: string;
+    id: string;
     alive: boolean;
 }
 
@@ -71,10 +73,16 @@ export class WrongWayRacerGameLogic {
         return this._players
     }
 
+    public get globalTime(): number {
+        return this._globalTimer
+    }
+
     public addPlayer = (playerId: string) => {
-        this._players.push({
-            playerId, alive: true, road: Math.floor(roadsCount / 2)
-        })
+        if (!this._isGameStarted && !this.findPlayerById(playerId)) {
+            this._players.push({
+                id: playerId, alive: true, road: Math.floor(roadsCount / 2)
+            })
+        }
     }
 
     public startGame = () => {
@@ -114,7 +122,7 @@ export class WrongWayRacerGameLogic {
 
             const alivePlayerFound = this._players.findIndex(player => player.alive) > -1
             if (!alivePlayerFound) {
-                 this._eventEmitter.emit("gameFinished", {winnerPlayerId: player.playerId, finishTime: this._globalTimer})
+                 this._eventEmitter.emit("gameFinished", {winnerPlayerId: player.id, finishTime: this._globalTimer})
             }
         }
     }
@@ -137,7 +145,7 @@ export class WrongWayRacerGameLogic {
             this._timeToSpawnCar = spawnTime;
 
             const spawnPosition: Vec2 =  [getRandomInt(roadsCount), playerView]
-            const spawnedCar: Car = { position: spawnPosition }
+            const spawnedCar: Car = { position: spawnPosition, id: uuidv4() }
             this._cars.push(spawnedCar)
         }
     }
@@ -165,14 +173,14 @@ export class WrongWayRacerGameLogic {
         for (const car of this._cars) {
             for (const player of this._players) {
                 if (car.position[0] === player.road && car.position[0] <= 0) {
-                    this._eventEmitter.emit("playerDeath", {playerId: player.playerId, road: player.road})
+                    this._eventEmitter.emit("playerDeath", {playerId: player.id, road: player.road})
                 }
             }
         }
     }
 
     private findPlayerById = (playerId: string): Player | undefined => {
-        const index = this._players.findIndex(player => playerId === player.playerId)
+        const index = this._players.findIndex(player => playerId === player.id)
         if (index >= 0) {
             const player = this._players[index]
             return player

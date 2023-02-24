@@ -1,19 +1,7 @@
 import SharedDatabase from "./shared.database";
 import { v4 as uuidv4 } from 'uuid';
 import {DatabaseError} from "./interface";
-import {IWrongWayRacerArena} from "../wrong-way-racer/wrong-way-racer.arena";
-
-export class WrongWayRacerArenaTest implements IWrongWayRacerArena {
-  private readonly _arenaId: string
-
-  constructor(arenaId: string) {
-    this._arenaId = arenaId
-  }
-
-  public get arenaId() {
-    return this._arenaId;
-  }
-}
+import GameArena from "../arena/arena";
 
 describe("Check shared database", () => {
   let sharedDatabase: SharedDatabase;
@@ -51,25 +39,25 @@ describe("Check shared database", () => {
   });
 
   test("Test non existing addWrongWayRacerArena => error not thrown", () => {
-    sharedDatabase.addWrongWayRacerArena(new WrongWayRacerArenaTest(wrongWayArenaId))
+    sharedDatabase.addGameArena(new GameArena(wrongWayArenaId))
   });
 
   test("Test getWrongWayRacerArenaById => arena returned", () => {
-    const arena = sharedDatabase.getWrongWayRacerArenaById(wrongWayArenaId)
+    const arena = sharedDatabase.getGameArenaById(wrongWayArenaId)
 
     expect(arena.arenaId).toBe(wrongWayArenaId)
   });
 
   test("Test add existing addWrongWayRacerArena (id) => error thrown", () => {
     const throwing = () => {
-      sharedDatabase.addWrongWayRacerArena(new WrongWayRacerArenaTest(wrongWayArenaId))
+      sharedDatabase.addGameArena(new GameArena(wrongWayArenaId))
     };
     expect(throwing).toThrow(DatabaseError);
   });
 
   test("Test removeWrongWayRacerArenaById => arena removed", () => {
-    sharedDatabase.removeWrongWayRacerArenaById(wrongWayArenaId)
-    const arena = sharedDatabase.getWrongWayRacerArenaById(wrongWayArenaId)
+    sharedDatabase.removeGameArenaById(wrongWayArenaId)
+    const arena = sharedDatabase.getGameArenaById(wrongWayArenaId)
     expect(arena).toBe(undefined)
   });
 });

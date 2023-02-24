@@ -1,14 +1,34 @@
 import {UserProfile} from "@splash/types";
 import {DatabaseError} from "./interface";
-import {IWrongWayRacerArena} from "../wrong-way-racer/wrong-way-racer.arena";
+import {IGameArena} from "../arena/arena.interface";
 
 class SharedDatabase {
-    private readonly _wrongWayRacerArenas: {[key: string]: IWrongWayRacerArena }
+    private readonly _gameArenas: {[key: string]: IGameArena }
     private readonly _users: {[key: string]: UserProfile}
+    private readonly _userToConnectedArena: {[key: string]: IGameArena}
 
     constructor() {
-        this._wrongWayRacerArenas = {}
+        this._gameArenas = {}
         this._users = {}
+        this._userToConnectedArena = {}
+    }
+
+    public getConnectedArenaByUserId = (id: string): IGameArena => {
+        return this._userToConnectedArena[id]
+    }
+
+    public addConnectedArenaByUserId = (id: string, arena: IGameArena): void => {
+        if (this._userToConnectedArena[id] === undefined) {
+            this._userToConnectedArena[id] = arena
+        } else {
+            throw new DatabaseError(`Trying to add new arena to user ${id}!`)
+        }
+    }
+
+    public removeConnectedArenaByUserId = (id: string): IGameArena => {
+        const arena = this._userToConnectedArena[id]
+        this._userToConnectedArena[id] = undefined
+        return arena
     }
 
     public addUser = (user: UserProfile): void => {
@@ -27,21 +47,21 @@ class SharedDatabase {
         return Object.values(this._users).filter((user) => username === user.username).at(0)
     }
 
-    public addWrongWayRacerArena = (arena: IWrongWayRacerArena): void => {
-        if (this._wrongWayRacerArenas[arena.arenaId] === undefined) {
-            this._wrongWayRacerArenas[arena.arenaId] = arena;
+    public addGameArena = (arena: IGameArena): void => {
+        if (this._gameArenas[arena.arenaId] === undefined) {
+            this._gameArenas[arena.arenaId] = arena;
         } else {
             throw new DatabaseError(`Trying to add arena with existing ID ${arena.arenaId}!`)
         }
     }
 
-    public getWrongWayRacerArenaById = (id: string): IWrongWayRacerArena | undefined => {
-        return this._wrongWayRacerArenas[id]
+    public getGameArenaById = (id: string): IGameArena | undefined => {
+        return this._gameArenas[id]
     }
 
-    public removeWrongWayRacerArenaById = (id: string): IWrongWayRacerArena | undefined => {
-        const arena = this._wrongWayRacerArenas[id]
-        this._wrongWayRacerArenas[id] = undefined
+    public removeGameArenaById = (id: string): IGameArena | undefined => {
+        const arena = this._gameArenas[id]
+        this._gameArenas[id] = undefined
         return arena
     }
 }
