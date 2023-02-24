@@ -24,17 +24,17 @@ export class LogManager implements ILogManager {
       winston.format.label({ label: this._package || '', message: false }),
       winston.format.timestamp({
         format: 'HH:mm:ss',
-        alias: 'time',
+        alias: 'time'
       }),
       winston.format.timestamp({
         format: 'YYYY-MM-DD',
-        alias: 'date',
+        alias: 'date'
       }),
       winston.format.printf(
         ({ level, message, label, time, date }: TransformableInfo) =>
-          `| [${level.toUpperCase()}] | ${time} | ${date} | ${label} | ${message} `,
+          `| [${level.toUpperCase()}] | ${time} | ${date} | ${label} | ${message} `
       ),
-      winston.format.colorize({ all: true }),
+      winston.format.colorize({ all: true })
     );
 
     this._logger = winston.createLogger({
@@ -42,16 +42,16 @@ export class LogManager implements ILogManager {
       format: winston.format.combine(colorize),
       transports: [
         new winston.transports.Console({
-          stderrLevels: ['error'],
-        }),
-      ],
+          stderrLevels: ['error']
+        })
+      ]
     });
     // https://github.com/winstonjs/winston#using-custom-logging-levels
     winston.addColors({
       info: 'bold cyan',
       warn: 'italic yellow',
       error: 'bold red',
-      debug: 'green',
+      debug: 'green'
     });
   }
 
@@ -72,10 +72,7 @@ export class LogManager implements ILogManager {
   };
 
   public child = (childPackage?: string): LogManager => {
-    return new LogManager(
-      this._config,
-      `${this._package}${childPackage ? `/${childPackage}` : ''}`,
-    );
+    return new LogManager(this._config, `${this._package}${childPackage ? `/${childPackage}` : ''}`);
   };
 
   public get level(): string {

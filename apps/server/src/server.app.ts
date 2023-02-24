@@ -1,15 +1,13 @@
 import { IAppConfig } from './server.config';
-import helmet from "helmet";
-import compression from "compression";
-import cors from "cors";
-import express, {
-  Express, Router,
-} from "express";
+import helmet from 'helmet';
+import compression from 'compression';
+import cors from 'cors';
+import express, { Express, Router } from 'express';
 import { ILogManager } from '@splash/logger';
-import { createServer, Server } from "http"
-import { Server as SocketIOServer } from "socket.io";
-import { SocketHandler} from "./game/interface";
-import {SharedDatabase} from "./game/database";
+import { createServer, Server } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import { SocketHandler } from './game/interface';
+import { SharedDatabase } from './game/database';
 
 class ExpressServerApp {
   private readonly _config: IAppConfig;
@@ -26,7 +24,13 @@ class ExpressServerApp {
     this._socketIoServer = new SocketIOServer(this._httpServer);
   }
 
-  public bootstrap = async ({routes, handlers}: {routes?: Router, handlers?: SocketHandler[]}): Promise<void> => {
+  public bootstrap = async ({
+    routes,
+    handlers
+  }: {
+    routes?: Router;
+    handlers?: SocketHandler[];
+  }): Promise<void> => {
     this._logger.info('Initializing server...');
 
     // set security HTTP headers
@@ -35,7 +39,7 @@ class ExpressServerApp {
     // Add URLs that are allowed to interact with the server
     this._app.use(
       cors({
-        origin: this._config.corsUrl,
+        origin: this._config.corsUrl
       })
     );
 
@@ -43,17 +47,20 @@ class ExpressServerApp {
     this._app.use(compression());
 
     if (routes) {
-      this._app.use("/", routes);
+      this._app.use('/', routes);
     }
 
     if (handlers) {
-      const sharedDatabase = new SharedDatabase()
+      const sharedDatabase = new SharedDatabase();
 
       this._socketIoServer.on('connection', (socket) => {
-        const connectionDatabase = {}
+        const connectionDatabase = {};
 
         for (const registerHandler of handlers) {
-          registerHandler(this._socketIoServer, socket, {local: connectionDatabase, shared: sharedDatabase})
+          registerHandler(this._socketIoServer, socket, {
+            local: connectionDatabase,
+            shared: sharedDatabase
+          });
         }
       });
     }
@@ -62,24 +69,22 @@ class ExpressServerApp {
 
     await new Promise<void>((resolve, reject) => {
       this._httpServer.listen(this._config.port, () => {
-        this._logger.info(`App listening on port ${this._config.port}`)
-        resolve()
-      })
+        this._logger.info(`App listening on port ${this._config.port}`);
+        resolve();
+      });
 
       this._httpServer.once('error', (err) => {
-        this._logger.error(
-          `There was an error starting the server: ${JSON.stringify(err)}`
-        );
+        this._logger.error(`There was an error starting the server: ${JSON.stringify(err)}`);
         reject(err);
       });
-    })
+    });
   };
 
   public teardown = async (): Promise<void> => {
     this._logger.info(`Terminating server on ${this._config.port} port...`);
     this._httpServer.close();
     this._socketIoServer.close();
-  }
+  };
 
   public get app(): Express {
     return this._app;

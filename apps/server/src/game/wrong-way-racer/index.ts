@@ -1,3 +1,3 @@
-import registerWrongWayHandlers from './wrong-way-racer.handlers'
+import registerWrongWayHandlers from './wrong-way-racer.handlers';
 
-export default registerWrongWayHandlers
+export default registerWrongWayHandlers;

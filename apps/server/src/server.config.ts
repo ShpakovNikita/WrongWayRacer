@@ -11,7 +11,7 @@ export interface IAppConfig {
 
 export const createConfig = (): IAppConfig => {
   const loggerConfig: ILoggerConfig = {
-    logLevel: process.env.LOG_LEVEL || 'info',
+    logLevel: process.env.LOG_LEVEL || 'info'
   };
 
   const rootLogger = new LogManager(loggerConfig, '@splash');
@@ -20,7 +20,7 @@ export const createConfig = (): IAppConfig => {
     logger: rootLogger,
     port: parseInt(process.env.PORT) || 3000,
     nodeEnv: process.env.NODE_ENV,
-    corsUrl: process.env.CORS_URL,
+    corsUrl: process.env.CORS_URL
   };
 
   return config;

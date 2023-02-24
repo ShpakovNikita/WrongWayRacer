@@ -1,3 +1,3 @@
-import SharedDatabase from "./shared.database";
+import SharedDatabase from './shared.database';
 
-export {SharedDatabase}
+export { SharedDatabase };

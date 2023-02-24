@@ -1,3 +1,3 @@
-import { WrongWayRacerGameLogicConfig } from './game-logic'
+import { WrongWayRacerGameLogicConfig } from './game-logic';
 
-export { WrongWayRacerGameLogicConfig }
+export { WrongWayRacerGameLogicConfig };

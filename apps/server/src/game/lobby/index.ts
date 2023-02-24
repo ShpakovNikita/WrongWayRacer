@@ -1,3 +1,3 @@
-import registerLobbyHandlers from './lobby.handlers'
+import registerLobbyHandlers from './lobby.handlers';
 
-export default registerLobbyHandlers
+export default registerLobbyHandlers;

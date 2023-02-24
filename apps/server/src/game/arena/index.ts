@@ -1,1 +1,1 @@
-export * from './arena.interface'
+export * from './arena.interface';

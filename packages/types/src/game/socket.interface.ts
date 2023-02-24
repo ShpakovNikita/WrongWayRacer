@@ -1,4 +1,4 @@
 export enum CallbackStatus {
-    ok = "ok",
-    nok = "nok"
+  ok = 'ok',
+  nok = 'nok'
 }
