@@ -1,14 +1,22 @@
 import { observer } from 'mobx-react-lite';
-import { Stage, Container, AnimatedSprite, _ReactPixi } from '@pixi/react';
-import { useEffect, useRef } from 'react';
-import { useWrongWayRacerStore } from '@/context/WrongWayRacer';
-import { WrongWayRacerSprites } from '@/context/WrongWayRacer/WrongWayRacer.resources';
-import { useResize } from '@/utils/useResize';
+import { _ReactPixi, Stage } from '@pixi/react';
+import { useEffect } from 'react';
+import { useWrongWayRacerStore, WrongWayRacerStoreProvider } from '@/context/WrongWayRacer';
+import WrongWayRacerScene from '@/components/games/WrongWayRacer/WrongWayRacerScene';
+import { CircularProgress } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 
-const WrongWayRacer = ({ options, ...props }: _ReactPixi.IStage) => {
-  const { activateStore, deactivateStore, resources } = useWrongWayRacerStore();
-  const canvasRef = useRef<Stage>(null);
-  const { width, height } = useResize();
+const WrongWayRacer = ({
+  options,
+  width,
+  height,
+  className,
+  ...props
+}: Omit<_ReactPixi.IStage, 'width' | 'height'> & {
+  width: number;
+  height: number;
+}) => {
+  const { activateStore, deactivateStore, loading } = useWrongWayRacerStore();
 
   useEffect(() => {
     activateStore().then();
@@ -19,22 +27,35 @@ const WrongWayRacer = ({ options, ...props }: _ReactPixi.IStage) => {
   }, []);
 
   return (
-    <Stage {...props} ref={canvasRef} options={{ backgroundAlpha: 1, backgroundColor: '#fff', ...options }}>
-      <Container>
-        {resources[WrongWayRacerSprites.explosionSpriteSheet] && (
-          <AnimatedSprite
-            textures={resources[WrongWayRacerSprites.explosionSpriteSheet].animations.explosion}
-            isPlaying={true}
-            initialFrame={0}
-            animationSpeed={0.8}
-            scale={{ x: 0.5, y: 0.5 }}
-            anchor={0.5}
-            x={300}
-            y={150}
-          />
-        )}
-      </Container>
-    </Stage>
+    <AnimatePresence>
+      {!loading && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key="stage">
+          <Stage
+            {...props}
+            className={className}
+            width={width}
+            height={height}
+            options={{ backgroundAlpha: 1, backgroundColor: '#fff', ...options }}
+          >
+            {/* Double WrongWayRacerStoreProvider with shared static state as workaround for losing react context in WebGL renderer */}
+            <WrongWayRacerStoreProvider>
+              <WrongWayRacerScene width={width} height={height} />
+            </WrongWayRacerStoreProvider>
+          </Stage>
+        </motion.div>
+      )}
+      {loading && (
+        <motion.div
+          key="loader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className={`${className} absolute border-slate-400 bg-black/50 border-[1px] h-full w-full flex items-center justify-center`}
+        >
+          <CircularProgress />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
