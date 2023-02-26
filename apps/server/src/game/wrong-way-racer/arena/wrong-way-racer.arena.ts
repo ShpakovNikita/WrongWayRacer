@@ -8,13 +8,16 @@ import {
   PlayersUpdatedSocketPayload
 } from '@splash/types';
 import { Server, Socket } from 'socket.io';
-import { WrongWayRacerGameLogic, WrongWayRacerGameLogicConfig } from './game-logic/game-logic';
-import { GameFinishedPayload, PlayerDeathPayload } from './game-logic/game-logic.events';
-import GameArena from '../arena/arena';
+import { WrongWayRacerGameLogic, WrongWayRacerGameLogicConfig } from '../game-logic/game-logic';
+import { GameFinishedPayload, PlayerDeathPayload } from '../game-logic/game-logic.events';
+import GameArena from '../../arena/arena';
+import { ILogManager } from '@splash/logger';
+import { ArenaUser } from '../../arena';
+import { TypedEmitter } from 'tiny-typed-emitter';
+import { WrongWayRacerArenaEvents } from './wrong-way-racer.events';
 
-type GameUser = UserProfile & {
+type GameUser = ArenaUser & {
   deathTime?: number;
-  socket: Socket;
 };
 
 export class WrongWayRacerArenaError extends Error {
@@ -24,58 +27,28 @@ export class WrongWayRacerArenaError extends Error {
   }
 }
 
-type ArenaShutdownCallback = (arena: WrongWayRacerArena, users: UserProfile[]) => void;
-
 export class WrongWayRacerArena extends GameArena {
-  private readonly _activeUsers: GameUser[];
+  private readonly _activeUsers: GameUser[] = [];
   private readonly _io: Server;
   private readonly _gameLogic: WrongWayRacerGameLogic;
 
   private _lastUpdate: number;
   private _loopInterval: NodeJS.Timer;
 
-  private readonly _onArenaShutdown: ArenaShutdownCallback;
+  private readonly _eventEmitter: TypedEmitter<WrongWayRacerArenaEvents>;
 
-  constructor(
-    arenaId: string,
-    io: Server,
-    config: WrongWayRacerGameLogicConfig,
-    onArenaShutdown: ArenaShutdownCallback
-  ) {
-    super(arenaId);
+  public get eventEmitter(): TypedEmitter<WrongWayRacerArenaEvents> {
+    return this._eventEmitter;
+  }
+
+  constructor(arenaId: string, io: Server, config: WrongWayRacerGameLogicConfig, logger?: ILogManager) {
+    super(arenaId, logger?.child('WrongWayRacer.arena'));
 
     this._io = io;
     this._gameLogic = new WrongWayRacerGameLogic(config);
     this._lastUpdate = Date.now();
-    this._onArenaShutdown = onArenaShutdown;
+    this._eventEmitter = new TypedEmitter<WrongWayRacerArenaEvents>();
   }
-
-  public connectUser = (connectingUser: UserProfile, socket: Socket): void => {
-    if (this._activeUsers.filter((user) => user.username === connectingUser.username)) {
-      throw new WrongWayRacerArenaError(
-        `Trying to connect already connected user ${JSON.stringify(connectingUser)}`
-      );
-    }
-
-    this._activeUsers.push({ ...connectingUser, socket });
-    this._gameLogic.addPlayer(connectingUser.id);
-    socket.join(this.arenaId);
-  };
-
-  public disconnectUser = (disconnectingUser: UserProfile): void => {
-    const activeUserIndex = this._activeUsers.findIndex(
-      (user) => user.username === disconnectingUser.username
-    );
-    if (activeUserIndex < 0) {
-      throw new WrongWayRacerArenaError(
-        `Trying to disconnect not connected user ${JSON.stringify(disconnectingUser)}`
-      );
-    }
-
-    const socket = this._activeUsers[activeUserIndex].socket;
-    this._activeUsers.splice(activeUserIndex, 1);
-    socket.leave(this.arenaId);
-  };
 
   public startGame = () => {
     this._gameLogic.eventEmitter.addListener('playerDeath', this.onPlayerDeath);
@@ -84,21 +57,20 @@ export class WrongWayRacerArena extends GameArena {
     this._gameLogic.startGame();
 
     this._lastUpdate = Date.now();
-    this._loopInterval = setInterval(this.gameLoop, 1000 / 60);
-  };
+    this._loopInterval = setInterval(this.gameLoop, 1000 / 30);
 
-  private shutdownArena = () => {
-    clearInterval(this._loopInterval);
-    this._onArenaShutdown(this, this._activeUsers);
+    this._logger?.info(`Game started for arena with id ${this.arenaId}...`);
   };
 
   /** MARK: Client to Server events */
   public onLeftPressed = (playerId: string) => {
     this._gameLogic.movePlayerLeft(playerId);
+    this.updatePlayersPositions();
   };
 
   public onRightPressed = (playerId: string) => {
     this._gameLogic.movePlayerRight(playerId);
+    this.updatePlayersPositions();
   };
 
   /** MARK: Server to Client events */
@@ -114,20 +86,24 @@ export class WrongWayRacerArena extends GameArena {
 
   public updatePlayersPositions = () => {
     const socketPayload: PlayersUpdatedSocketPayload = { players: this._gameLogic.players };
-    this._io.in(this.arenaId).emit(WrongWayRacerSocketEventType.carsUpdated, socketPayload);
+    this._io.in(this.arenaId).emit(WrongWayRacerSocketEventType.playersUpdated, socketPayload);
   };
 
   private onGameFinished = ({ winnerPlayerId, finishTime }: GameFinishedPayload) => {
+    this._logger?.debug(`onGameFinished called with winner id ${winnerPlayerId} and time ${finishTime}`);
+
     const socketPayload: GameFinishedSocketPayload = {
       winnerId: winnerPlayerId,
       gameFinishedTime: finishTime
     };
     this._io.in(this.arenaId).emit(WrongWayRacerSocketEventType.gameFinished, socketPayload);
 
-    this.shutdownArena();
+    this.eventEmitter.emit('gameFinished');
   };
 
   private onPlayerDeath = ({ playerId, road }: PlayerDeathPayload) => {
+    this._logger?.debug(`Player with id ${playerId} exploded`);
+
     const player = this._activeUsers.filter((user) => user.id === playerId).at(0);
     if (player) {
       player.deathTime = this._gameLogic.globalTime;
@@ -137,12 +113,33 @@ export class WrongWayRacerArena extends GameArena {
     this._io.in(this.arenaId).emit(WrongWayRacerSocketEventType.playerExploded, socketPayload);
   };
 
-  /** MARK: game loop */
+  /** MARK: Game loop */
   private gameLoop = () => {
     const now = Date.now();
     const dt = now - this._lastUpdate;
     this._lastUpdate = now;
 
-    this._gameLogic.gameLoop(dt);
+    this._logger?.debug(`Running game loop for arena ${this.arenaId} with dt ${dt} ms`);
+    this._gameLogic.gameLoop(dt / 1000);
+
+    this.updateTimer();
+    this.updateCarsPositions();
   };
+
+  /** MARK: Overrides */
+  protected onUserConnected = (connectingUser: UserProfile, socket: Socket): void => {
+    super.onUserConnected(connectingUser, socket);
+
+    this._logger?.debug(`onUserConnected ${JSON.stringify(connectingUser)}...`);
+
+    this._gameLogic.addPlayer(connectingUser.id);
+  };
+
+  protected onShutdownBegin() {
+    super.onShutdownBegin();
+
+    this._logger?.info(`onShutdownBegin on arena with id ${this.arenaId}...`);
+
+    clearInterval(this._loopInterval);
+  }
 }

@@ -1,4 +1,4 @@
-import { GameDatabase, SocketHandler, SocketListener } from '../interface';
+import { SocketHandler, SocketListener } from '../interface';
 import { Socket, Server } from 'socket.io';
 import {
   CreateUserPayload,
@@ -8,8 +8,10 @@ import {
   UserProfile
 } from '@splash/types';
 import { v4 as uuidv4 } from 'uuid';
-import { WrongWayRacerArena } from '../wrong-way-racer/wrong-way-racer.arena';
+import { WrongWayRacerArena } from '../wrong-way-racer/arena/wrong-way-racer.arena';
 import { WrongWayRacerGameLogicConfig } from '../wrong-way-racer/game-logic';
+import { ILogManager } from '@splash/logger';
+import { GameServer } from '../server';
 
 const getWrongWayRacerConfig = (gameSpeed: number): WrongWayRacerGameLogicConfig => {
   const clampedGameSpeed = Math.min(Math.max(0, gameSpeed), 6);
@@ -28,40 +30,42 @@ const getWrongWayRacerConfig = (gameSpeed: number): WrongWayRacerGameLogicConfig
 const createWrongWayRacerArena = (
   io: Server,
   socket: Socket,
-  database: GameDatabase,
-  config: WrongWayRacerGameLogicConfig
+  gameServer: GameServer,
+  config: WrongWayRacerGameLogicConfig,
+  logger?: ILogManager
 ): WrongWayRacerArena => {
   const arenaId = `wrongWayRacer:${uuidv4()}`;
 
-  const wrongWayRacerArena = new WrongWayRacerArena(arenaId, io, config, (arena, users) => {
-    removeWrongWayRacerArena(database, arena, users);
-  });
+  const wrongWayRacerArena = new WrongWayRacerArena(arenaId, io, config, logger);
 
-  database.shared.addGameArena(wrongWayRacerArena);
+  gameServer.addGameArena(wrongWayRacerArena);
+
+  wrongWayRacerArena.eventEmitter.addListener('gameFinished', () => {
+    setImmediate(() => {
+      removeWrongWayRacerArena(gameServer, wrongWayRacerArena);
+    });
+  });
 
   return wrongWayRacerArena;
 };
 
-const removeWrongWayRacerArena = (
-  database: GameDatabase,
-  arena: WrongWayRacerArena,
-  users: UserProfile[]
-) => {
-  for (const user of users) {
-    database.shared.removeConnectedArenaByUserId(user.id);
-    arena.disconnectUser(user);
-  }
-
-  database.shared.removeGameArenaById(arena.arenaId);
+const removeWrongWayRacerArena = (gameServer: GameServer, arena: WrongWayRacerArena) => {
+  arena.shutdown();
+  gameServer.removeGameArenaById(arena.arenaId);
 };
 
-const createUser = (io: Server, socket: Socket, database: GameDatabase): SocketListener => {
+const createUser = (
+  io: Server,
+  socket: Socket,
+  gameServer: GameServer,
+  logger?: ILogManager
+): SocketListener => {
   return ({ username }: CreateUserPayload, callback) => {
-    if (database.shared.getUserByUsername(username)) {
+    if (gameServer.getUserByUsername(username)) {
       callback({ status: CallbackStatus.nok });
     } else {
       // TODO: make users persistent, using JWT auth
-      database.shared.addUser({
+      gameServer.addUser({
         username,
         id: socket.id
       });
@@ -71,29 +75,41 @@ const createUser = (io: Server, socket: Socket, database: GameDatabase): SocketL
   };
 };
 
-const startWrongWayRacer = (io: Server, socket: Socket, database: GameDatabase): SocketListener => {
+const startWrongWayRacer = (
+  io: Server,
+  socket: Socket,
+  gameServer: GameServer,
+  logger?: ILogManager
+): SocketListener => {
   // TODO: It's better to start another small server instance for different arenas
   return ({ gameSpeed }: StartWrongWayRacerPayload, callback) => {
-    const user = database.shared.getUserById(socket.id);
+    let user = gameServer.getUserById(socket.id);
     if (!user) {
-      callback({ status: CallbackStatus.nok });
+      user = {
+        username: `guest_${socket.id}`,
+        id: socket.id
+      };
+      gameServer.addUser(user);
+      // callback({ status: CallbackStatus.nok });
       return;
     }
 
     const arenaConfig = getWrongWayRacerConfig(gameSpeed);
 
-    const wrongWayRacerArena = createWrongWayRacerArena(io, socket, database, arenaConfig);
+    const wrongWayRacerArena = createWrongWayRacerArena(io, socket, gameServer, arenaConfig, logger);
 
     wrongWayRacerArena.connectUser(user, socket);
     wrongWayRacerArena.startGame();
 
-    callback({ status: CallbackStatus.ok });
+    if (callback) {
+      callback({ status: CallbackStatus.ok });
+    }
   };
 };
 
-const registerLobbyHandlers: SocketHandler = (io, socket, database: GameDatabase) => {
-  socket.on(LobbyEventType.createUser, createUser(io, socket, database));
-  socket.on(LobbyEventType.startWrongWayRacer, startWrongWayRacer(io, socket, database));
+const registerLobbyHandlers: SocketHandler = (io, socket, gameServer: GameServer, logger?: ILogManager) => {
+  socket.on(LobbyEventType.createUser, createUser(io, socket, gameServer, logger));
+  socket.on(LobbyEventType.startWrongWayRacer, startWrongWayRacer(io, socket, gameServer, logger));
 };
 
 export default registerLobbyHandlers;

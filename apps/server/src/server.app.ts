@@ -7,7 +7,7 @@ import { ILogManager } from '@splash/logger';
 import { createServer, Server } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { SocketHandler } from './game/interface';
-import { SharedDatabase } from './game/database';
+import { GameServer } from './game/server';
 
 class ExpressServerApp {
   private readonly _config: IAppConfig;
@@ -15,6 +15,7 @@ class ExpressServerApp {
   private readonly _app: Express;
   private readonly _httpServer: Server;
   private readonly _socketIoServer: SocketIOServer;
+  private readonly _gameServer: GameServer;
 
   public constructor(config: IAppConfig) {
     this._config = config;
@@ -22,6 +23,7 @@ class ExpressServerApp {
     this._app = express();
     this._httpServer = createServer(this._app);
     this._socketIoServer = new SocketIOServer(this._httpServer);
+    this._gameServer = new GameServer();
   }
 
   public bootstrap = async ({
@@ -51,16 +53,11 @@ class ExpressServerApp {
     }
 
     if (handlers) {
-      const sharedDatabase = new SharedDatabase();
-
       this._socketIoServer.on('connection', (socket) => {
-        const connectionDatabase = {};
+        this._logger.info(`User with id ${socket.id} connected!`);
 
         for (const registerHandler of handlers) {
-          registerHandler(this._socketIoServer, socket, {
-            local: connectionDatabase,
-            shared: sharedDatabase
-          });
+          registerHandler(this._socketIoServer, socket, this._gameServer, this._logger);
         }
       });
     }
@@ -82,6 +79,7 @@ class ExpressServerApp {
 
   public teardown = async (): Promise<void> => {
     this._logger.info(`Terminating server on ${this._config.port} port...`);
+    await this._gameServer.shutdown();
     this._httpServer.close();
     this._socketIoServer.close();
   };

@@ -1,41 +1,41 @@
 import { UserProfile } from '@splash/types';
-import { DatabaseError } from './interface';
+import { GameServerError } from './interface';
 import { IGameArena } from '../arena/arena.interface';
+import { ILogManager } from '@splash/logger';
 
-class SharedDatabase {
+class GameServer {
+  private readonly _logger?: ILogManager;
+
   private readonly _gameArenas: { [key: string]: IGameArena };
   private readonly _users: { [key: string]: UserProfile };
-  private readonly _userToConnectedArena: { [key: string]: IGameArena };
 
-  constructor() {
+  constructor(logger?: ILogManager) {
     this._gameArenas = {};
     this._users = {};
-    this._userToConnectedArena = {};
+    this._logger = logger;
   }
 
-  public getConnectedArenaByUserId = (id: string): IGameArena => {
-    return this._userToConnectedArena[id];
-  };
-
-  public addConnectedArenaByUserId = (id: string, arena: IGameArena): void => {
-    if (this._userToConnectedArena[id] === undefined) {
-      this._userToConnectedArena[id] = arena;
-    } else {
-      throw new DatabaseError(`Trying to add new arena to user ${id}!`);
+  public shutdown = async (): Promise<void> => {
+    for (const [_, arena] of Object.entries(this._gameArenas)) {
+      await arena.shutdown();
     }
   };
 
-  public removeConnectedArenaByUserId = (id: string): IGameArena => {
-    const arena = this._userToConnectedArena[id];
-    this._userToConnectedArena[id] = undefined;
-    return arena;
+  public getConnectedArenaByUserId = (id: string): IGameArena | undefined => {
+    // Not optimal, but ok for now
+    for (const [arenaId, arena] of Object.entries(this._gameArenas)) {
+      const user = arena.connectedUsers.find((user) => user.id === id);
+      if (user) {
+        return arena;
+      }
+    }
   };
 
   public addUser = (user: UserProfile): void => {
     if (this._users[user.id] === undefined) {
       this._users[user.id] = user;
     } else {
-      throw new DatabaseError(`Trying to create user with existing ID ${user.id}!`);
+      throw new GameServerError(`Trying to create user with existing ID ${user.id}!`);
     }
   };
 
@@ -53,7 +53,7 @@ class SharedDatabase {
     if (this._gameArenas[arena.arenaId] === undefined) {
       this._gameArenas[arena.arenaId] = arena;
     } else {
-      throw new DatabaseError(`Trying to add arena with existing ID ${arena.arenaId}!`);
+      throw new GameServerError(`Trying to add arena with existing ID ${arena.arenaId}!`);
     }
   };
 
@@ -68,4 +68,4 @@ class SharedDatabase {
   };
 }
 
-export default SharedDatabase;
+export default GameServer;
