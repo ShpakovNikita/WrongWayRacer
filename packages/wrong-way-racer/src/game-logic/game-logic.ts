@@ -2,16 +2,7 @@ import { Vec2 } from '@splash/types';
 import { PlayerDeathPayload, WrongWayRacerEvents } from './game-logic.events';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
-
-export type WrongWayRacerGameLogicConfig = {
-  timerSpeed: number;
-  carsSpeed: number;
-
-  minSpawnTime: number;
-  maxSpawnTime: number;
-  multiplySpawnWithSpeed: boolean;
-  decreaseSpawnTimeWithSpeed: boolean;
-};
+import { WrongWayRacerGameLogicConfig } from './game-logic.config';
 
 export type Car = {
   id: string;

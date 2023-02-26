@@ -1,23 +1,19 @@
 import { useEffect, useState } from 'react';
 
 const useResize = (): { width: number; height: number } => {
-  if (typeof window === 'undefined') {
-    return { width: 1920, height: 1080 };
-  }
-
-  const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
+  const [size, setSize] = useState([window?.innerWidth ?? 1920, window?.innerHeight ?? 1080]);
 
   useEffect(() => {
     const onResize = () => {
       requestAnimationFrame(() => {
-        setSize([window.innerWidth, window.innerHeight]);
+        setSize([window?.innerWidth, window?.innerHeight]);
       });
     };
 
-    window.addEventListener('resize', onResize);
+    window?.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', onResize);
+      window?.removeEventListener('resize', onResize);
     };
   }, []);
 

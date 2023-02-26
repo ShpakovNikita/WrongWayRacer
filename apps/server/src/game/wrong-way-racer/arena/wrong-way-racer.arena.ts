@@ -8,13 +8,17 @@ import {
   PlayersUpdatedSocketPayload
 } from '@splash/types';
 import { Server, Socket } from 'socket.io';
-import { WrongWayRacerGameLogic, WrongWayRacerGameLogicConfig } from '../game-logic/game-logic';
-import { GameFinishedPayload, PlayerDeathPayload } from '../game-logic/game-logic.events';
 import GameArena from '../../arena/arena';
 import { ILogManager } from '@splash/logger';
 import { ArenaUser } from '../../arena';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { WrongWayRacerArenaEvents } from './wrong-way-racer.events';
+import {
+  GameFinishedPayload,
+  PlayerDeathPayload,
+  WrongWayRacerGameLogic,
+  WrongWayRacerGameLogicConfig
+} from '@splash/wrong-way-racer';
 
 type GameUser = ArenaUser & {
   deathTime?: number;

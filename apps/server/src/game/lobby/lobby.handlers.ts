@@ -9,23 +9,9 @@ import {
 } from '@splash/types';
 import { v4 as uuidv4 } from 'uuid';
 import { WrongWayRacerArena } from '../wrong-way-racer/arena/wrong-way-racer.arena';
-import { WrongWayRacerGameLogicConfig } from '../wrong-way-racer/game-logic';
 import { ILogManager } from '@splash/logger';
 import { GameServer } from '../server';
-
-const getWrongWayRacerConfig = (gameSpeed: number): WrongWayRacerGameLogicConfig => {
-  const clampedGameSpeed = Math.min(Math.max(0, gameSpeed), 6);
-
-  return {
-    timerSpeed: 1.0,
-    carsSpeed: 1.0 + clampedGameSpeed / 3.0,
-
-    minSpawnTime: 1.0,
-    maxSpawnTime: 2.0,
-    multiplySpawnWithSpeed: true,
-    decreaseSpawnTimeWithSpeed: true
-  };
-};
+import { getWrongWayRacerConfig, WrongWayRacerGameLogicConfig } from '@splash/wrong-way-racer';
 
 const createWrongWayRacerArena = (
   io: Server,

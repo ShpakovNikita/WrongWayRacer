@@ -509,7 +509,13 @@
       "packageName": "@splash/types",
       "projectFolder": "packages/types",
       "tags": ["client-team", "server-team"]
+    },
+    {
+      "packageName": "@splash/wrong-way-racer",
+      "projectFolder": "packages/wrong-way-racer",
+      "tags": ["client-team", "server-team"]
     }
+
     //
     // {
     //   "packageName": "my-toolchain",

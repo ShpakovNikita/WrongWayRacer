@@ -76,6 +76,7 @@ export class WrongWayRacerController implements IController {
     this._socket.off('connect');
   };
 
+  // TODO: should be a lobby's method, but for simplicity it's ok for now
   public startWrongWayRacerGame = (payload: StartWrongWayRacerPayload): void => {
     this._socket.emit(LobbyEventType.startWrongWayRacer, payload);
   };
