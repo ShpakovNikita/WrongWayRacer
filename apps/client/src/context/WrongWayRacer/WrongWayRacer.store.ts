@@ -5,13 +5,27 @@ import {
   WrongWayRacerSprites
 } from '@/context/WrongWayRacer/WrongWayRacer.resources';
 import * as PIXI from 'pixi.js';
-import { sleep } from '@/utils/sleep';
+import { io } from 'socket.io-client';
+import { envConfig } from '@/configs/env';
+import {
+  CarsUpdatedSocketPayload,
+  GameFinishedSocketPayload,
+  PlayerExplodedSocketPayload,
+  PlayersUpdatedSocketPayload,
+  TimerUpdatedSocketPayload
+} from '@splash/types';
+import {
+  IWrongWayRacerControllerDelegate,
+  WrongWayRacerController
+} from '@/api/socket/WrongWayRacer.controller';
 
 // there is no window object on the server
 enableStaticRendering(typeof window === 'undefined');
 
-export default class WrongWayRacerStore {
+export default class WrongWayRacerStore implements IWrongWayRacerControllerDelegate {
   private _loading = true;
+  private _connected = false;
+  private _wrongWayRacerSocketController: WrongWayRacerController;
 
   private readonly _resources: { [key: string]: PIXI.Spritesheet | PIXI.BaseTexture };
 
@@ -32,6 +46,9 @@ export default class WrongWayRacerStore {
     this._resources = {};
 
     makeAutoObservable(this);
+
+    const socket = io(envConfig.backendUrl, { transports: ['websocket'] });
+    this._wrongWayRacerSocketController = new WrongWayRacerController(this, socket);
   }
 
   public get loading() {
@@ -42,15 +59,25 @@ export default class WrongWayRacerStore {
     this._loading = value;
   }
 
+  public get connected() {
+    return this._connected;
+  }
+
+  public set connected(value: boolean) {
+    this._connected = value;
+  }
+
   public activateStore = async () => {
     this.loading = true;
 
     await this.precacheSceneTextures();
+    this._wrongWayRacerSocketController.activate();
 
     this.loading = false;
   };
 
   public deactivateStore = async () => {
+    this._wrongWayRacerSocketController.deactivate();
     PIXI.utils.destroyTextureCache();
   };
 
@@ -70,6 +97,27 @@ export default class WrongWayRacerStore {
     );
     await explosionSpriteSheet.parse();
     this._resources[WrongWayRacerSprites.explosionSpriteSheet] = explosionSpriteSheet;
+  };
+
+  /** MARK: IWrongWayRacerControllerDelegate */
+  public onTimerUpdated = (payload: TimerUpdatedSocketPayload) => {};
+
+  public onPlayersUpdated = (payload: PlayersUpdatedSocketPayload) => {};
+
+  public onCarsUpdated = (payload: CarsUpdatedSocketPayload) => {};
+
+  public onGameFinished = (payload: GameFinishedSocketPayload) => {};
+
+  public onPlayerExploded = (payload: PlayerExplodedSocketPayload) => {};
+
+  public onConnectionEstablished = () => {
+    this.connected = true;
+
+    this._wrongWayRacerSocketController.startWrongWayRacerGame({ gameSpeed: 2 });
+  };
+
+  public onDisconnect = () => {
+    this.connected = false;
   };
 }
 

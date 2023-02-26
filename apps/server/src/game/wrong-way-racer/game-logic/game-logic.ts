@@ -164,8 +164,8 @@ export class WrongWayRacerGameLogic {
       const car = this._cars[i];
       if (car.position[1] < 0) {
         this._cars.slice(i, 1);
-        i -= 1;
       }
+      i -= 1;
     }
   };
 

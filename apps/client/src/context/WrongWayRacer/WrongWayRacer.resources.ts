@@ -24,6 +24,7 @@ export enum WrongWayRacerSprites {
   // Other
   sky = '/assets/games/wrong-way-racer/sky.png',
   fog = '/assets/games/wrong-way-racer/fog.png',
+  shadow = '/assets/games/wrong-way-racer/shadow.png',
   explosionSpriteSheet = '/assets/games/wrong-way-racer/explosion_spritesheet.avif'
 }
 

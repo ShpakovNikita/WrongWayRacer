@@ -6,6 +6,7 @@ import * as PIXI from 'pixi.js';
 import Road from '@/components/games/WrongWayRacer/Road';
 import Sky from '@/components/games/WrongWayRacer/Sky';
 import PlayerCar from '@/components/games/WrongWayRacer/PlayerCar';
+import EnemyCar from '@/components/games/WrongWayRacer/EnemyCar';
 
 const WrongWayRacerScene = ({ width, height }: { width: number; height: number }) => {
   const { resources } = useWrongWayRacerStore();
@@ -26,7 +27,8 @@ const WrongWayRacerScene = ({ width, height }: { width: number; height: number }
       />
       <Sky width={width} height={height} />
       <Road width={width} height={height} />
-      <PlayerCar width={width} height={height} />
+      {/*<PlayerCar width={width} height={height} />*/}
+      <EnemyCar width={width} height={height} />
     </>
   );
 };

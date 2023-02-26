@@ -57,7 +57,7 @@ export class WrongWayRacerArena extends GameArena {
     this._gameLogic.startGame();
 
     this._lastUpdate = Date.now();
-    this._loopInterval = setInterval(this.gameLoop, 1000 / 30);
+    this._loopInterval = setInterval(this.gameLoop, 1000 / 60);
 
     this._logger?.info(`Game started for arena with id ${this.arenaId}...`);
   };

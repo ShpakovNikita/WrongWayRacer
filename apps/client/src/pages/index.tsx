@@ -3,8 +3,7 @@ import { Inter } from '@next/font/google';
 import WrongWayRacer from '@/components/games/WrongWayRacer';
 import { WrongWayRacerStoreProvider } from '@/context/WrongWayRacer';
 import PixiStageAutoresizeWrapper from '@/components/games/PixiStageAutoresizeWrapper';
-
-const inter = Inter({ subsets: ['latin'] });
+import Lobby from '@/components/Lobby';
 
 export default function Home() {
   return (
@@ -15,7 +14,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={'bg-wrong-way-racer-blue h-screen flex py-6 justify-center px-6 md:px-0'}>
+      <main
+        className={
+          'bg-wrong-way-racer-blue h-screen flex flex-col py-6 space-y-6 items-center px-6 md:px-0 font-saira'
+        }
+      >
         <WrongWayRacerStoreProvider>
           <PixiStageAutoresizeWrapper className="h-70v w-full max-w-5xl relative">
             {({ width, height }) => {
@@ -23,6 +26,8 @@ export default function Home() {
             }}
           </PixiStageAutoresizeWrapper>
         </WrongWayRacerStoreProvider>
+        {/*
+        <Lobby className="max-w-5xl" />*/}
       </main>
     </>
   );

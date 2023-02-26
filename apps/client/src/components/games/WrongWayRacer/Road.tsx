@@ -1,21 +1,15 @@
 import { observer } from 'mobx-react-lite';
-import { Container, Sprite } from '@pixi/react';
+import { Container } from '@pixi/react';
 import { WrongWayRacerSprites } from '@/context/WrongWayRacer/WrongWayRacer.resources';
-import { useWrongWayRacerStore } from '@/context/WrongWayRacer';
 import * as PIXI from 'pixi.js';
 import FullWidthSprite from '@/components/games/WrongWayRacer/FullWidthSprite';
+import { useRoadParams } from '@/components/games/WrongWayRacer/hooks';
 
 const Road = ({ width, height }: { width: number; height: number }) => {
-  const { resources } = useWrongWayRacerStore();
-
-  const imageTexture = resources[WrongWayRacerSprites.road] as PIXI.BaseTexture;
-  let aspectRatio = width / imageTexture.width;
-
-  const roadScaleY = 0.7 + height / width;
-  const roadHeight = imageTexture.height * aspectRatio * roadScaleY;
+  const { roadScaleY, roadHeight } = useRoadParams(width, height, 0);
 
   return (
-    <Container y={height - roadHeight + 50}>
+    <Container y={height - roadHeight}>
       <FullWidthSprite
         blendMode={PIXI.BLEND_MODES.XOR}
         image={WrongWayRacerSprites.mountainFade}
