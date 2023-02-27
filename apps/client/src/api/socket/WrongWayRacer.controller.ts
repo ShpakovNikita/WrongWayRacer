@@ -1,4 +1,5 @@
 import {
+  CallbackStatus,
   CarsUpdatedSocketPayload,
   GameFinishedSocketPayload,
   LobbyEventType,
@@ -24,7 +25,7 @@ export interface IWrongWayRacerControllerDelegate {
   onConnectionError?: () => Promise<void> | void;
 }
 
-export class WrongWayRacerController implements IController {
+export class WrongWayRacerSocketController implements IController {
   private readonly _delegate: IWrongWayRacerControllerDelegate;
   private readonly _socket: Socket;
 
@@ -77,7 +78,27 @@ export class WrongWayRacerController implements IController {
   };
 
   // TODO: should be a lobby's method, but for simplicity it's ok for now
-  public startWrongWayRacerGame = (payload: StartWrongWayRacerPayload): void => {
-    this._socket.emit(LobbyEventType.startWrongWayRacer, payload);
+  public startWrongWayRacerGame = async (payload: StartWrongWayRacerPayload): Promise<void> => {
+    await new Promise<void>((resolve, reject) => {
+      this._socket.emit(
+        LobbyEventType.startWrongWayRacer,
+        payload,
+        ({ status }: { status: CallbackStatus }) => {
+          if (status === CallbackStatus.ok) {
+            resolve();
+          } else {
+            reject();
+          }
+        }
+      );
+    });
+  };
+
+  public rightPressed = (): void => {
+    this._socket.emit(WrongWayRacerSocketEventType.rightPressed);
+  };
+
+  public leftPressed = (): void => {
+    this._socket.emit(WrongWayRacerSocketEventType.leftPressed);
   };
 }

@@ -11,6 +11,7 @@ const leftPressed = (
   logger?: ILogManager
 ): SocketListener => {
   return () => {
+    logger?.debug(`On left pressed for ${socket.id} user!`);
     const arena = gameServer.getConnectedArenaByUserId(socket.id);
     arena?.onLeftPressed(socket.id);
   };
@@ -23,6 +24,7 @@ const rightPressed = (
   logger?: ILogManager
 ): SocketListener => {
   return async () => {
+    logger?.debug(`On right pressed for ${socket.id} user!`);
     const arena = gameServer.getConnectedArenaByUserId(socket.id);
     arena?.onRightPressed(socket.id);
   };

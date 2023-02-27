@@ -6,9 +6,14 @@ export type WrongWayRacerGameLogicConfig = {
   maxSpawnTime: number;
   multiplySpawnWithSpeed: boolean;
   decreaseSpawnTimeWithSpeed: boolean;
+
+  serverSide: boolean;
 };
 
-export const getWrongWayRacerConfig = (gameSpeed: number): WrongWayRacerGameLogicConfig => {
+export const getWrongWayRacerConfig = (
+  gameSpeed: number,
+  serverSide: boolean
+): WrongWayRacerGameLogicConfig => {
   const clampedGameSpeed = Math.min(Math.max(0, gameSpeed), 6);
 
   return {
@@ -18,6 +23,8 @@ export const getWrongWayRacerConfig = (gameSpeed: number): WrongWayRacerGameLogi
     minSpawnTime: 1.0,
     maxSpawnTime: 2.0,
     multiplySpawnWithSpeed: true,
-    decreaseSpawnTimeWithSpeed: true
+    decreaseSpawnTimeWithSpeed: true,
+
+    serverSide
   };
 };

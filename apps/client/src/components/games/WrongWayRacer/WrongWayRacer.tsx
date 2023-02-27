@@ -24,7 +24,7 @@ const WrongWayRacer = ({
     return () => {
       deactivateStore().then();
     };
-  }, [activateStore, deactivateStore()]);
+  }, [activateStore, deactivateStore]);
 
   return (
     <AnimatePresence>

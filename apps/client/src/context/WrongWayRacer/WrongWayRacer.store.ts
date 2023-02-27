@@ -16,16 +16,37 @@ import {
 } from '@splash/types';
 import {
   IWrongWayRacerControllerDelegate,
-  WrongWayRacerController
+  WrongWayRacerSocketController
 } from '@/api/socket/WrongWayRacer.controller';
+import { Car, getWrongWayRacerConfig, WrongWayRacerGameLogic } from '@splash/wrong-way-racer';
+import {
+  IWrongWayRacerInputDelegate,
+  WrongWayRacerInputController
+} from '@/context/WrongWayRacer/WrongWayRacer.input';
 
 // there is no window object on the server
 enableStaticRendering(typeof window === 'undefined');
 
-export default class WrongWayRacerStore implements IWrongWayRacerControllerDelegate {
+const gameSpeed = 2;
+
+export default class WrongWayRacerStore
+  implements IWrongWayRacerControllerDelegate, IWrongWayRacerInputDelegate
+{
   private _loading = true;
   private _connected = false;
-  private _wrongWayRacerSocketController: WrongWayRacerController;
+
+  private _playerExplodeAnimationPlaying = false;
+  private _playerRoad = 1;
+  private _globalTimer = 0;
+  private _cars: Car[] = [];
+
+  private _wrongWayRacerSocketController: WrongWayRacerSocketController;
+  private _wrongWayRacerInputController: WrongWayRacerInputController;
+  private _wrongWayRacerGameLogic: WrongWayRacerGameLogic;
+
+  private _lastUpdate = 0;
+  private _loopInterval = 0;
+  private readonly _playerId: string;
 
   private readonly _resources: { [key: string]: PIXI.Spritesheet | PIXI.BaseTexture };
 
@@ -48,7 +69,10 @@ export default class WrongWayRacerStore implements IWrongWayRacerControllerDeleg
     makeAutoObservable(this);
 
     const socket = io(envConfig.backendUrl, { transports: ['websocket'] });
-    this._wrongWayRacerSocketController = new WrongWayRacerController(this, socket);
+    this._playerId = socket.id;
+    this._wrongWayRacerSocketController = new WrongWayRacerSocketController(this, socket);
+    this._wrongWayRacerInputController = new WrongWayRacerInputController(this);
+    this._wrongWayRacerGameLogic = new WrongWayRacerGameLogic(getWrongWayRacerConfig(gameSpeed, false));
   }
 
   public get loading() {
@@ -67,16 +91,50 @@ export default class WrongWayRacerStore implements IWrongWayRacerControllerDeleg
     this._connected = value;
   }
 
+  public get globalTimer() {
+    return this._globalTimer;
+  }
+
+  private set globalTimer(value: number) {
+    this._globalTimer = value;
+  }
+
+  public get cars() {
+    return this._cars;
+  }
+
+  private set cars(value: Car[]) {
+    this._cars = value;
+  }
+
+  public get playerRoad() {
+    return this._playerRoad;
+  }
+
+  private set playerRoad(value: number) {
+    this._playerRoad = value;
+  }
+
+  public get playerExplodeAnimationPlaying() {
+    return this._playerExplodeAnimationPlaying;
+  }
+
+  public set playerExplodeAnimationPlaying(value: boolean) {
+    this._playerExplodeAnimationPlaying = value;
+  }
+
   public activateStore = async () => {
     this.loading = true;
 
     await this.precacheSceneTextures();
     this._wrongWayRacerSocketController.activate();
+    this._wrongWayRacerInputController.activate();
 
     this.loading = false;
   };
 
   public deactivateStore = async () => {
+    this._wrongWayRacerInputController.deactivate();
     this._wrongWayRacerSocketController.deactivate();
     PIXI.utils.destroyTextureCache();
   };
@@ -99,25 +157,77 @@ export default class WrongWayRacerStore implements IWrongWayRacerControllerDeleg
     this._resources[WrongWayRacerSprites.explosionSpriteSheet] = explosionSpriteSheet;
   };
 
+  private finishGame = async () => {
+    clearInterval(this._loopInterval);
+  };
+
+  private startGame = async () => {
+    await this._wrongWayRacerSocketController.startWrongWayRacerGame({ gameSpeed });
+    this._wrongWayRacerGameLogic.startGame();
+
+    this._lastUpdate = Date.now();
+    this._loopInterval = window.setInterval(this.gameLoop, 1000 / 60);
+  };
+
+  private gameLoop = async () => {
+    const now = Date.now();
+    const dt = now - this._lastUpdate;
+    this._lastUpdate = now;
+
+    this._wrongWayRacerGameLogic.gameLoop(dt / 1000);
+    this.syncSceneWithUI();
+  };
+
+  /** TODO: It's better to think about some kind of micro framework for syncing client with backend.
+   * Something like wrappers around replicated properties, that indicates that some socket event should be fired on it's
+   * change, and if we are on client, we subscribed on this change to automatically sync it's with the backend along
+   * with the same client-side logic for smoother game experience */
+
+  private syncSceneWithUI = () => {
+    this.globalTimer = this._wrongWayRacerGameLogic.globalTime;
+    this.cars = this._wrongWayRacerGameLogic.cars;
+  };
+
   /** MARK: IWrongWayRacerControllerDelegate */
-  public onTimerUpdated = (payload: TimerUpdatedSocketPayload) => {};
+  public onTimerUpdated = ({ gameTime }: TimerUpdatedSocketPayload) => {
+    this._wrongWayRacerGameLogic.globalTime = gameTime;
+  };
 
-  public onPlayersUpdated = (payload: PlayersUpdatedSocketPayload) => {};
+  public onPlayersUpdated = ({ players }: PlayersUpdatedSocketPayload) => {
+    const player = players.find((p) => p.id === this._playerId);
+    if (player) {
+      this.playerRoad = player.road;
+    }
+  };
 
-  public onCarsUpdated = (payload: CarsUpdatedSocketPayload) => {};
+  public onCarsUpdated = ({ cars }: CarsUpdatedSocketPayload) => {
+    this._wrongWayRacerGameLogic.cars = cars;
+  };
 
-  public onGameFinished = (payload: GameFinishedSocketPayload) => {};
+  public onGameFinished = async (payload: GameFinishedSocketPayload) => {
+    await this.finishGame();
+  };
 
-  public onPlayerExploded = (payload: PlayerExplodedSocketPayload) => {};
+  public onPlayerExploded = (payload: PlayerExplodedSocketPayload) => {
+    this.playerExplodeAnimationPlaying = false;
+  };
 
-  public onConnectionEstablished = () => {
+  public onConnectionEstablished = async () => {
     this.connected = true;
-
-    this._wrongWayRacerSocketController.startWrongWayRacerGame({ gameSpeed: 2 });
+    await this.startGame();
   };
 
   public onDisconnect = () => {
     this.connected = false;
+  };
+
+  /** MARK: IWrongWayRacerInputDelegate */
+  public onLeftPressed = () => {
+    this._wrongWayRacerSocketController.leftPressed();
+  };
+
+  public onRightPressed = () => {
+    this._wrongWayRacerSocketController.rightPressed();
   };
 }
 

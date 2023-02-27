@@ -59,6 +59,10 @@ class ExpressServerApp {
         for (const registerHandler of handlers) {
           registerHandler(this._socketIoServer, socket, this._gameServer, this._logger);
         }
+
+        this._socketIoServer.on('disconnect', () => {
+          this._logger.info(`User with id ${socket.id} disconnected!`);
+        });
       });
     }
 

@@ -123,7 +123,6 @@ export class WrongWayRacerArena extends GameArena {
     const dt = now - this._lastUpdate;
     this._lastUpdate = now;
 
-    this._logger?.debug(`Running game loop for arena ${this.arenaId} with dt ${dt} ms`);
     this._gameLogic.gameLoop(dt / 1000);
 
     this.updateTimer();

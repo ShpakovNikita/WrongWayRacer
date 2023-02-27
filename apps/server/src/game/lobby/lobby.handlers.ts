@@ -1,12 +1,6 @@
 import { SocketHandler, SocketListener } from '../interface';
 import { Socket, Server } from 'socket.io';
-import {
-  CreateUserPayload,
-  LobbyEventType,
-  CallbackStatus,
-  StartWrongWayRacerPayload,
-  UserProfile
-} from '@splash/types';
+import { CreateUserPayload, LobbyEventType, CallbackStatus, StartWrongWayRacerPayload } from '@splash/types';
 import { v4 as uuidv4 } from 'uuid';
 import { WrongWayRacerArena } from '../wrong-way-racer/arena/wrong-way-racer.arena';
 import { ILogManager } from '@splash/logger';
@@ -77,10 +71,9 @@ const startWrongWayRacer = (
       };
       gameServer.addUser(user);
       // callback({ status: CallbackStatus.nok });
-      return;
     }
 
-    const arenaConfig = getWrongWayRacerConfig(gameSpeed);
+    const arenaConfig = getWrongWayRacerConfig(gameSpeed, true);
 
     const wrongWayRacerArena = createWrongWayRacerArena(io, socket, gameServer, arenaConfig, logger);
 

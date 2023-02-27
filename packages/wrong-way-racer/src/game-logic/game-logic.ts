@@ -35,7 +35,7 @@ const playerView = 10;
 // TODO: implement ECS approach
 export class WrongWayRacerGameLogic {
   private _config: WrongWayRacerGameLogicConfig;
-  private readonly _globalTimer: number;
+  private _globalTimer: number;
 
   private _cars: Car[] = [];
   private _players: Player[] = [];
@@ -60,12 +60,32 @@ export class WrongWayRacerGameLogic {
     return this._cars;
   }
 
+  public set cars(value) {
+    if (!this._config.serverSide) {
+      this._cars = value;
+    } else {
+      throw new Error(
+        "Setting car values from external is not allowed from the server! Server's Game Logic is the only source of truth"
+      );
+    }
+  }
+
   public get players(): Player[] {
     return this._players;
   }
 
   public get globalTime(): number {
     return this._globalTimer;
+  }
+
+  public set globalTime(value) {
+    if (!this._config.serverSide) {
+      this._globalTimer = value;
+    } else {
+      throw new Error(
+        "Setting car values from external is not allowed from the server! Server's Game Logic is the only source of truth"
+      );
+    }
   }
 
   public addPlayer = (playerId: string) => {
@@ -102,9 +122,16 @@ export class WrongWayRacerGameLogic {
     }
 
     const acceleratedDeltaTime = dt * this._config.timerSpeed;
-    this.carSpawner(acceleratedDeltaTime);
+    if (this._config.serverSide) {
+      this.carSpawner(acceleratedDeltaTime);
+    }
+
     this.moveCars(acceleratedDeltaTime);
-    this.collisionCheck();
+
+    if (this._config.serverSide) {
+      this.collisionCheck();
+    }
+
     this.removeOutOfBoundCars(acceleratedDeltaTime);
   };
 
