@@ -24,7 +24,7 @@ class GameServer {
   public getConnectedArenaByUserId = (id: string): IGameArena | undefined => {
     // Not optimal, but ok for now
     for (const [arenaId, arena] of Object.entries(this._gameArenas)) {
-      const user = arena?.connectedUsers.find((user) => user.id === id);
+      const user = arena.connectedUsers.find((user) => user.id === id);
 
       if (user) {
         return arena;
@@ -64,7 +64,7 @@ class GameServer {
 
   public removeGameArenaById = (id: string): IGameArena | undefined => {
     const arena = this._gameArenas[id];
-    this._gameArenas[id] = undefined;
+    delete this._gameArenas[id];
     return arena;
   };
 }

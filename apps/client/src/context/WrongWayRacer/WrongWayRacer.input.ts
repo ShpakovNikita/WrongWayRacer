@@ -25,9 +25,9 @@ export class WrongWayRacerInputController implements IController {
       return;
     }
 
-    if ((event.code === 'ArrowLeft' || event.code === 'a') && this._delegate?.onLeftPressed) {
+    if ((event.code === 'ArrowLeft' || event.code === 'KeyA') && this._delegate?.onLeftPressed) {
       await this._delegate.onLeftPressed();
-    } else if ((event.code === 'ArrowRight' || event.code === 'd') && this._delegate?.onRightPressed) {
+    } else if ((event.code === 'ArrowRight' || event.code === 'KeyD') && this._delegate?.onRightPressed) {
       await this._delegate.onRightPressed();
     }
 

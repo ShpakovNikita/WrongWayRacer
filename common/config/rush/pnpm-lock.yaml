@@ -10,6 +10,7 @@ importers:
       '@emotion/styled': ^11.10.6
       '@mui/material': ^5.11.10
       '@next/font': 13.1.6
+      '@pixi/filter-drop-shadow': ^5.1.1
       '@pixi/react': ^7.0.2
       '@splash/types': workspace:*
       '@splash/wrong-way-racer': workspace:*
@@ -35,6 +36,7 @@ importers:
       '@emotion/styled': 11.10.6_73a8040592cd047eabdc64bf4bbf4040
       '@mui/material': 5.11.10_bc09092faaaa533c5ed846d27b6f145a
       '@next/font': 13.1.6
+      '@pixi/filter-drop-shadow': 5.1.1
       '@pixi/react': 7.0.2_react-dom@18.2.0+react@18.2.0
       '@splash/wrong-way-racer': link:../../packages/wrong-way-racer
       '@types/node': 18.14.0
@@ -2018,11 +2020,31 @@ packages:
       }
     dev: false
 
+  /@pixi/filter-drop-shadow/5.1.1:
+    resolution:
+      {
+        integrity: sha512-Dl1GjZVyOuOtFec3ThwB0Q3qG3yLVFpNDWqLGOaSo6a7YEbEWA/0+fFfIyrxtbIwS0/T5HvoIO53SNQdWf8qtQ==
+      }
+    peerDependencies:
+      '@pixi/core': ^7.0.0-X
+    dependencies:
+      '@pixi/filter-kawase-blur': 5.1.1
+    dev: false
+
   /@pixi/filter-fxaa/7.1.2:
     resolution:
       {
         integrity: sha512-vW47OpemETweJW6OaAy+jI/RUWtOdEhrXH7bPTDIJyTEij62xgec95f9AWU/OfWzK5lOsoWXtlV//mvGUdi86Q==
       }
+    dev: false
+
+  /@pixi/filter-kawase-blur/5.1.1:
+    resolution:
+      {
+        integrity: sha512-nPnJ1ChBFP+4pgFCwC0RJgHAJCetiHcQU3INH7zCdq88cFABmVmhN+wCKRNg4H7lF1EJjaXgFDkTrTreOD/bnw==
+      }
+    peerDependencies:
+      '@pixi/core': ^7.0.0-X
     dev: false
 
   /@pixi/filter-noise/7.1.2:

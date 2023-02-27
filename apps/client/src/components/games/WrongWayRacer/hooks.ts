@@ -24,7 +24,7 @@ export const useRoadParams = (width: number, height: number, distance: number): 
   const imageTexture = resources[WrongWayRacerSprites.road] as PIXI.BaseTexture;
   let aspectRatio = width / imageTexture.width;
 
-  const roadScaleY = 0.7 + height / width;
+  const roadScaleY = 0.9 + height / width;
   const roadHeight = imageTexture.height * aspectRatio * roadScaleY - 50;
 
   return {

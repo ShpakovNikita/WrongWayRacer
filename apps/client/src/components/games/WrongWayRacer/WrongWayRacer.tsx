@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { _ReactPixi, Stage } from '@pixi/react';
-import { useEffect } from 'react';
 import { useWrongWayRacerStore, WrongWayRacerStoreProvider } from '@/context/WrongWayRacer';
 import WrongWayRacerScene from '@/components/games/WrongWayRacer/WrongWayRacerScene';
 import { CircularProgress } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffectOnce } from '@/utils/useEffectOnce';
 
 const WrongWayRacer = ({
   options,
@@ -18,13 +18,12 @@ const WrongWayRacer = ({
 }) => {
   const { activateStore, deactivateStore, loading } = useWrongWayRacerStore();
 
-  useEffect(() => {
+  useEffectOnce(() => {
     activateStore().then();
-
     return () => {
       deactivateStore().then();
     };
-  }, [activateStore, deactivateStore]);
+  });
 
   return (
     <AnimatePresence>
@@ -35,7 +34,7 @@ const WrongWayRacer = ({
             className={className}
             width={width}
             height={height}
-            options={{ backgroundAlpha: 1, backgroundColor: '#fff', ...options }}
+            options={{ backgroundAlpha: 1, backgroundColor: 0xfff, ...options }}
           >
             {/* Double WrongWayRacerStoreProvider with shared static state as workaround for losing react context in WebGL renderer */}
             <WrongWayRacerStoreProvider>

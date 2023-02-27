@@ -1,23 +1,22 @@
 import {
-  CallbackStatus,
   CarsUpdatedSocketPayload,
   GameFinishedSocketPayload,
-  LobbyEventType,
   PlayerExplodedSocketPayload,
   PlayersUpdatedSocketPayload,
-  StartWrongWayRacerPayload,
   TimerUpdatedSocketPayload,
-  WrongWayRacerSocketEventType
+  WrongWayRacerSocketEventType,
+  GameStartedSocketPayload
 } from '@splash/types';
 import { IController } from './interface';
-import { io, Socket } from 'socket.io-client';
-import { envConfig } from '@/configs/env';
+import { Socket } from 'socket.io-client';
+import socketInstance from '@/api/socket/socket.instance';
 
 export interface IWrongWayRacerControllerDelegate {
   onTimerUpdated?: (payload: TimerUpdatedSocketPayload) => Promise<void> | void;
   onPlayersUpdated?: (payload: PlayersUpdatedSocketPayload) => Promise<void> | void;
   onCarsUpdated?: (payload: CarsUpdatedSocketPayload) => Promise<void> | void;
   onGameFinished?: (payload: GameFinishedSocketPayload) => Promise<void> | void;
+  onGameStarted?: (payload: GameStartedSocketPayload) => Promise<void> | void;
   onPlayerExploded?: (payload: PlayerExplodedSocketPayload) => Promise<void> | void;
 
   onConnectionEstablished?: () => Promise<void> | void;
@@ -31,13 +30,26 @@ export class WrongWayRacerSocketController implements IController {
 
   constructor(delegate: IWrongWayRacerControllerDelegate, socket?: Socket) {
     this._delegate = delegate;
-    this._socket = socket ?? io(envConfig.backendUrl, { transports: ['websocket'] });
+    this._socket = socket ?? socketInstance;
+  }
+
+  public get connected() {
+    return this._socket.connected;
+  }
+
+  public get connectionId() {
+    return this._socket.id;
   }
 
   public activate = (): void => {
     this._socket.on('connect', this._delegate.onConnectionEstablished ?? (() => undefined));
     this._socket.on('disconnect', this._delegate.onDisconnect ?? (() => undefined));
     this._socket.on('connect_error', this._delegate.onConnectionError ?? (() => undefined));
+
+    this._socket.on(
+      WrongWayRacerSocketEventType.gameStarted,
+      this._delegate.onGameStarted ?? (() => undefined)
+    );
 
     this._socket.on(
       WrongWayRacerSocketEventType.gameFinished,
@@ -71,27 +83,11 @@ export class WrongWayRacerSocketController implements IController {
     this._socket.off(WrongWayRacerSocketEventType.playersUpdated);
     this._socket.off(WrongWayRacerSocketEventType.timerUpdated);
     this._socket.off(WrongWayRacerSocketEventType.gameFinished);
+    this._socket.off(WrongWayRacerSocketEventType.gameStarted);
 
     this._socket.off('connect_error');
     this._socket.off('disconnect');
     this._socket.off('connect');
-  };
-
-  // TODO: should be a lobby's method, but for simplicity it's ok for now
-  public startWrongWayRacerGame = async (payload: StartWrongWayRacerPayload): Promise<void> => {
-    await new Promise<void>((resolve, reject) => {
-      this._socket.emit(
-        LobbyEventType.startWrongWayRacer,
-        payload,
-        ({ status }: { status: CallbackStatus }) => {
-          if (status === CallbackStatus.ok) {
-            resolve();
-          } else {
-            reject();
-          }
-        }
-      );
-    });
   };
 
   public rightPressed = (): void => {

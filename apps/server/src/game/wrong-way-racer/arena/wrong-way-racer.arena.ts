@@ -59,6 +59,8 @@ export class WrongWayRacerArena extends GameArena {
     this._gameLogic.eventEmitter.addListener('gameFinished', this.onGameFinished);
 
     this._gameLogic.startGame();
+    this.gameStarted();
+    this.updatePlayersPositions();
 
     this._lastUpdate = Date.now();
     this._loopInterval = setInterval(this.gameLoop, 1000 / 60);
@@ -78,6 +80,10 @@ export class WrongWayRacerArena extends GameArena {
   };
 
   /** MARK: Server to Client events */
+  public gameStarted = () => {
+    this._io.in(this.arenaId).emit(WrongWayRacerSocketEventType.gameStarted, {});
+  };
+
   public updateTimer = () => {
     const socketPayload: TimerUpdatedSocketPayload = { gameTime: this._gameLogic.globalTime };
     this._io.in(this.arenaId).emit(WrongWayRacerSocketEventType.timerUpdated, socketPayload);

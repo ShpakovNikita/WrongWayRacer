@@ -25,8 +25,11 @@ export enum WrongWayRacerSprites {
   sky = '/assets/games/wrong-way-racer/sky.png',
   fog = '/assets/games/wrong-way-racer/fog.png',
   shadow = '/assets/games/wrong-way-racer/shadow.png',
-  explosionSpriteSheet = '/assets/games/wrong-way-racer/explosion_spritesheet.avif'
+  explosionSpriteSheet = '/assets/games/wrong-way-racer/explosion_spritesheet.avif',
+  sairaBitmap = '/assets/fonts/bitmap/saira/saira.png'
 }
+
+export const sairaBitmapFont = '/assets/fonts/bitmap/saira/saira.xml';
 
 const getSpriteFrames = (w: number, h: number, frame_w: number, frame_h: number, count: number) => {
   let frame = 0;

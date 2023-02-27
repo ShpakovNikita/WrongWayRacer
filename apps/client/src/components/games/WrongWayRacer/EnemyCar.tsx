@@ -3,18 +3,58 @@ import { WrongWayRacerSprites } from '@/context/WrongWayRacer/WrongWayRacer.reso
 import FullWidthSprite from '@/components/games/WrongWayRacer/FullWidthSprite';
 import { useCarEngineMotion, useRoadParams } from '@/components/games/WrongWayRacer/hooks';
 import { lerp } from '@/utils/math';
+import * as PIXI from 'pixi.js';
+import { useWrongWayRacerStore } from '@/context';
+
+type EnemyCarParams = {
+  offsetX: number;
+  objectWidth: number;
+  positionY: number;
+};
+
+const getEnemyCarParams = ({
+  height,
+  width,
+  roadHeight,
+  distance,
+  carHeight
+}: {
+  height: number;
+  width: number;
+  roadHeight: number;
+  distance: number;
+  carHeight: number;
+}): EnemyCarParams => {
+  const farPositionY = height - roadHeight;
+  const closePositionY = height - carHeight;
+  const positionY = lerp(closePositionY, farPositionY, distance);
+
+  const farWidth = width / 40;
+  const closeWidth = width / 6;
+  const objectWidth = lerp(closeWidth, farWidth, distance);
+
+  const farOffsetX = width / 20;
+  const closeOffsetX = width / 1.7;
+  const offsetX = lerp(closeOffsetX, farOffsetX, distance);
+
+  return {
+    offsetX,
+    objectWidth,
+    positionY
+  };
+};
 
 const roadToParams = (road: number, carWidth: number) => {
   switch (road) {
     case 0:
       return {
-        image: WrongWayRacerSprites.enemyRight,
+        image: WrongWayRacerSprites.enemyLeft,
         stride: -carWidth
       };
     case 1:
       return { image: WrongWayRacerSprites.enemyCenter, stride: 0 };
     case 2:
-      return { image: WrongWayRacerSprites.enemyLeft, stride: carWidth };
+      return { image: WrongWayRacerSprites.enemyRight, stride: +carWidth };
     default:
       return { stride: 100, image: WrongWayRacerSprites.enemyCenter };
   }
@@ -38,24 +78,29 @@ const EnemyCar = ({
   road: number;
   distance: number;
 }) => {
-  const { roadHeight, roadCenter } = useRoadParams(width, height, distance);
-
+  const distanceAmplified = -Math.pow(distance - 1, 2) + 1;
+  const { resources } = useWrongWayRacerStore();
+  const { roadHeight, roadCenter } = useRoadParams(width, height, distanceAmplified);
   const motion = useCarEngineMotion({ height });
 
-  const carWidth = (width / 3) * lerp(0.2, 1, 1 - distance);
+  const carWidth = width / 6;
 
-  const { image, stride } = roadToParams(road, carWidth);
+  const carTexture = resources[WrongWayRacerSprites.carCenter] as PIXI.BaseTexture;
+  let carAspectRatio = carWidth / carTexture.width;
+  const carHeight = carTexture.height * carAspectRatio;
 
-  const carPositionY = height + motion.y - lerp(0, roadHeight, distance);
+  const carParams = getEnemyCarParams({ height, width, roadHeight, carHeight, distance: distanceAmplified });
+  const { stride, image } = roadToParams(road, carParams.objectWidth);
 
   return (
     <>
       <FullWidthSprite
         image={image}
-        anchor={[0.5, 0.5]}
-        x={roadCenter - stride}
-        y={carPositionY}
-        width={carWidth}
+        width={carParams.objectWidth}
+        anchor={[0.5, 0]}
+        x={roadCenter + stride}
+        y={carParams.positionY + motion.y * (1 - distance)}
+        zIndex={-distance}
       />
     </>
   );

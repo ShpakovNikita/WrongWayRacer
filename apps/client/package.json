@@ -18,6 +18,7 @@
     "@mui/material": "^5.11.10",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@pixi/filter-drop-shadow": "^5.1.1",
     "framer-motion": "^10.0.0",
     "pixi.js": "^7.1.2",
     "eslint": "8.34.0",

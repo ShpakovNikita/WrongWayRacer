@@ -5,6 +5,10 @@ import { AnimatedSprite } from '@pixi/react';
 import { useWrongWayRacerStore } from '@/context/WrongWayRacer';
 import * as PIXI from 'pixi.js';
 
+const getExplosionOffset = (playerRoad: number, carWidth: number) => {
+  return playerRoad === 0 ? -carWidth : playerRoad === 2 ? carWidth : 0;
+};
+
 const PlayerExplosion = ({ width, height }: { width: number; height: number }) => {
   const wrongWayRacerStore = useWrongWayRacerStore();
   const { resources, playerExplodeAnimationPlaying, playerRoad } = wrongWayRacerStore;
@@ -25,10 +29,12 @@ const PlayerExplosion = ({ width, height }: { width: number; height: number }) =
           initialFrame={0}
           animationSpeed={0.8}
           scale={aspectRatio / 2}
-          anchor={[0.5, 0.5]}
-          x={roadCenter + 50 + playerRoad === 0 ? -carWidth : playerRoad === 2 ? carWidth : 0}
+          anchor={[0.5, 0.4]}
+          x={roadCenter + 50 + getExplosionOffset(playerRoad, carWidth)}
           y={height - roadHeight}
-          onComplete={() => (wrongWayRacerStore.playerExplodeAnimationPlaying = false)}
+          onLoop={() => {
+            wrongWayRacerStore.playerExplodeAnimationPlaying = false;
+          }}
         />
       )}
     </>

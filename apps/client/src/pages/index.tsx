@@ -1,8 +1,8 @@
 import Head from 'next/head';
-import { Inter } from '@next/font/google';
 import WrongWayRacer from '@/components/games/WrongWayRacer';
 import { WrongWayRacerStoreProvider } from '@/context/WrongWayRacer';
 import PixiStageAutoresizeWrapper from '@/components/games/PixiStageAutoresizeWrapper';
+import { LobbyStoreProvider } from '@/context';
 import Lobby from '@/components/Lobby';
 
 export default function Home() {
@@ -19,15 +19,17 @@ export default function Home() {
           'bg-wrong-way-racer-blue h-screen flex flex-col py-6 space-y-6 items-center px-6 md:px-0 font-saira'
         }
       >
-        <WrongWayRacerStoreProvider>
-          <PixiStageAutoresizeWrapper className="h-70v w-full max-w-5xl relative">
-            {({ width, height }) => {
-              return <WrongWayRacer width={width} height={height} className={'rounded-xl shadow-glow'} />;
-            }}
-          </PixiStageAutoresizeWrapper>
-        </WrongWayRacerStoreProvider>
-        {/*
-        <Lobby className="max-w-5xl" />*/}
+        <LobbyStoreProvider>
+          <WrongWayRacerStoreProvider>
+            <PixiStageAutoresizeWrapper className="h-70v w-full max-w-5xl relative">
+              {({ width, height }) => {
+                return <WrongWayRacer width={width} height={height} className={'rounded-xl shadow-glow'} />;
+              }}
+            </PixiStageAutoresizeWrapper>
+          </WrongWayRacerStoreProvider>
+
+          <Lobby className="max-w-5xl" />
+        </LobbyStoreProvider>
       </main>
     </>
   );

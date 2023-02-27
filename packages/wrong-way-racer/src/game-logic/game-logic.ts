@@ -29,8 +29,10 @@ function getRandomInt(max) {
  * - m: is a distance of player view.
  * For this game, player stays always on one place, and cars approaching player
  */
-const roadsCount = 3;
-const playerView = 10;
+export const roadsCount = 3;
+export const playerViewDistance = 6;
+export const playerCarStart = 0;
+export const carLength = 1;
 
 // TODO: implement ECS approach
 export class WrongWayRacerGameLogic {
@@ -133,6 +135,8 @@ export class WrongWayRacerGameLogic {
     }
 
     this.removeOutOfBoundCars(acceleratedDeltaTime);
+
+    this._globalTimer += dt;
   };
 
   private onPlayerDeath = ({ playerId }: PlayerDeathPayload) => {
@@ -164,7 +168,7 @@ export class WrongWayRacerGameLogic {
 
       this._timeToSpawnCar = spawnTime;
 
-      const spawnPosition: Vec2 = [getRandomInt(roadsCount), playerView];
+      const spawnPosition: Vec2 = [getRandomInt(roadsCount), playerViewDistance];
       const spawnedCar: Car = { position: spawnPosition, id: uuidv4() };
       this._cars.push(spawnedCar);
     }
@@ -177,14 +181,7 @@ export class WrongWayRacerGameLogic {
   };
 
   private removeOutOfBoundCars = (dt: number) => {
-    let i = this._cars.length - 1;
-    while (i > 0) {
-      const car = this._cars[i];
-      if (car.position[1] < 0) {
-        this._cars.slice(i, 1);
-      }
-      i -= 1;
-    }
+    this._cars = this._cars.filter((car) => car.position[1] > 0);
   };
 
   private collisionCheck = () => {
@@ -192,7 +189,11 @@ export class WrongWayRacerGameLogic {
     // without extensive numbers of collision objects it should be ok
     for (const car of this._cars) {
       for (const player of this._players) {
-        if (car.position[0] === player.road && car.position[0] <= 0) {
+        if (
+          car.position[0] === player.road &&
+          playerCarStart <= car.position[1] &&
+          car.position[1] <= playerCarStart + carLength
+        ) {
           this._eventEmitter.emit('playerDeath', { playerId: player.id, road: player.road });
         }
       }

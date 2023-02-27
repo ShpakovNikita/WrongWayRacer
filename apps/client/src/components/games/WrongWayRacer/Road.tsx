@@ -24,7 +24,6 @@ const Road = ({ width, height }: { width: number; height: number }) => {
         x={width / 2}
         scale={[1.3, roadScaleY]}
       />
-      <FullWidthSprite image={WrongWayRacerSprites.fog} width={width} anchor={[0, 0.5]} scale={[1, 0.5]} />
     </Container>
   );
 };

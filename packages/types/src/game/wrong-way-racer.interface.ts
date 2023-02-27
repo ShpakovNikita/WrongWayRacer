@@ -10,7 +10,8 @@ export enum WrongWayRacerSocketEventType {
   playersUpdated = 'wrongWayRacer:playersUpdated',
   playerExploded = 'wrongWayRacer:playerExploded',
   timerUpdated = 'wrongWayRacer:timerUpdated',
-  gameFinished = 'wrongWayRacer:gameFinished'
+  gameFinished = 'wrongWayRacer:gameFinished',
+  gameStarted = 'wrongWayRacer:gameStarted'
 }
 
 export type CarsUpdatedSocketPayload = {
@@ -31,6 +32,8 @@ export type GameFinishedSocketPayload = {
   winnerId: string;
   gameFinishedTime: number;
 };
+
+export type GameStartedSocketPayload = {};
 
 export type TimerUpdatedSocketPayload = {
   gameTime: number;

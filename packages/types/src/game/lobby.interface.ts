@@ -1,7 +1,11 @@
 export enum LobbyEventType {
   // User game logic
   startWrongWayRacer = 'lobby:startWrongWayRacer',
-  createUser = 'lobby:createUser'
+  createUser = 'lobby:createUser',
+
+  // Server to client events
+  enteredArena = 'lobby:enteredArena',
+  leavedArena = 'lobby:leavedArena'
 }
 
 export type CreateUserPayload = {
@@ -16,3 +20,7 @@ export type UserProfile = {
   id: string;
   username: string;
 };
+
+export type EnteredArenaPayload = {};
+
+export type LeavedArenaPayload = {};
