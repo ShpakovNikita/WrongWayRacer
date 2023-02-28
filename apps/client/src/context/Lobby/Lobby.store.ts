@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
 import logger from '@/logging';
 import { ILobbyControllerDelegate, LobbySocketController } from '@/api/socket/Lobby.controller';
+import { room } from '@/context/Lobby/Lobby.data';
 
 // there is no window object on the server
 enableStaticRendering(typeof window === 'undefined');
@@ -77,6 +78,10 @@ export default class LobbyStore implements ILobbyControllerDelegate {
       this.inArena = false;
     }
   };
+
+  public get lobbyData() {
+    return room;
+  }
 
   /** MARK: ILobbyControllerDelegate */
   public onEnteredArena = async () => {

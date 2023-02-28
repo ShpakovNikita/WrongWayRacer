@@ -19,6 +19,8 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@pixi/filter-drop-shadow": "^5.1.1",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/base": "^5.0.0-alpha.119",
     "framer-motion": "^10.0.0",
     "pixi.js": "^7.1.2",
     "eslint": "8.34.0",

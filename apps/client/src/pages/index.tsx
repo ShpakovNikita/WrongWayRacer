@@ -16,7 +16,7 @@ export default function Home() {
       </Head>
       <main
         className={
-          'bg-wrong-way-racer-blue h-screen flex flex-col py-6 space-y-6 items-center px-6 md:px-0 font-saira'
+          'bg-wrong-way-racer-blue flex flex-col py-6 space-y-0 items-center px-6 md:px-0 font-saira'
         }
       >
         <LobbyStoreProvider>
@@ -28,7 +28,7 @@ export default function Home() {
             </PixiStageAutoresizeWrapper>
           </WrongWayRacerStoreProvider>
 
-          <Lobby className="max-w-5xl" />
+          <Lobby className="max-w-5xl h-30v" />
         </LobbyStoreProvider>
       </main>
     </>
