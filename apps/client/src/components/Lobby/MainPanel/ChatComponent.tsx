@@ -16,7 +16,7 @@ export default function ChatComponent({ className, ...props }: ListProps) {
     <List
       dense={true}
       sx={{ overflow: 'auto' }}
-      className={`${className} border-slate-400 bg-black/50 border-2 rounded-xl h-44`}
+      className={`${className} border-slate-400 bg-black/50 border-2 rounded-xl h-48`}
       {...props}
     >
       {lobbyData.chat.map((message) => (

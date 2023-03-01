@@ -14,11 +14,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main
-        className={
-          'bg-wrong-way-racer-blue flex flex-col py-6 space-y-0 items-center px-6 md:px-0 font-saira'
-        }
-      >
+      <main className={'bg-wrong-way-racer-blue flex flex-col py-6 space-y-0 items-center px-6 md:px-0'}>
         <LobbyStoreProvider>
           <WrongWayRacerStoreProvider>
             <PixiStageAutoresizeWrapper className="h-70v w-full max-w-5xl relative">
@@ -28,7 +24,7 @@ export default function Home() {
             </PixiStageAutoresizeWrapper>
           </WrongWayRacerStoreProvider>
 
-          <Lobby className="max-w-5xl h-30v" />
+          <Lobby className="max-w-5xl" />
         </LobbyStoreProvider>
       </main>
     </>
