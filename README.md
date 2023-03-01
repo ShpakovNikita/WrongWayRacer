@@ -5,6 +5,8 @@ This monorepo serves different applications from @splash ecosystem for wrong-way
 - `client` - client application for lobby and wrong way racer game
 - `server` - backend application for our client app
 
+Here is the [Demo video](https://youtu.be/HwN0O8ysUW0) of the project implementation
+
 For proper application work, you need to start both of the apps simultaneously
 
 The main purpose on using monorepo for this task was easily managing shared packages for types between node js and next js app and sharing main game logic in one package, so we can run the same code on server and on client (using server's event as source of truth, fetching the most critical and necessary data on server, and running the same code on client for filling the gaps between packets sending, aka game logic prediction, providing the smooth gaming experience)
