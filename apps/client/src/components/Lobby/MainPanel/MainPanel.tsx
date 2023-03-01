@@ -18,7 +18,7 @@ const MainPanel = ({ className, ...props }: BoxProps) => {
     if (!startRacingButtonDisabled) {
       await startGame();
     }
-  }, [startRacingButtonDisabled]);
+  }, [startRacingButtonDisabled, startGame]);
 
   return (
     <Box {...props} className={`${className} space-y-2`}>

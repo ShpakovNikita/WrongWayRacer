@@ -25,7 +25,7 @@ const WrongWayRacerScene = ({ width, height }: { width: number; height: number }
         <PlayerCar width={width} height={height} />
       </Container>
       <PlayerExplosion width={width} height={height} />
-      <GameTimer width={width} height={height} />
+      <GameTimer width={width} />
     </>
   );
 };
