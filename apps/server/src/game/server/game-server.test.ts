@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { GameServerError } from './interface';
 import GameArena from '../arena/arena';
 
-describe('Check shared database', () => {
+describe('Check game server', () => {
   let sharedDatabase: GameServer;
   let userId: string;
   let wrongWayArenaId: string;

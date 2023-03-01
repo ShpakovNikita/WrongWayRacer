@@ -5,6 +5,11 @@ import PlayerComponent from '@/components/Lobby/PlayersRoomBoard/PlayerComponent
 import { PrimaryButton } from '@/components/ui';
 import SettingsIcon from '@mui/icons-material/Settings';
 
+/**
+ * React component for displaying current player room info, like players list, room maximum capacity
+ * @param className: string - css classnames
+ * @param props: MUI BoxProps
+ */
 export default function PlayerRoomBoard({ className, ...props }: BoxProps) {
   const { lobbyData } = useLobbyStore();
 
@@ -20,12 +25,12 @@ export default function PlayerRoomBoard({ className, ...props }: BoxProps) {
       </Box>
       <Box className="p-2">
         <PrimaryButton className="w-full flex items-center justify-center" size="sm">
-          <SettingsIcon sx={{ fontSize: 'medium' }} />
+          <SettingsIcon sx={{ fontSize: 'medium', mr: 0.5 }} />
           Setting
         </PrimaryButton>
-        <List dense sx={{ maxHeight: '100vh', overflow: 'scroll' }}>
+        <List dense sx={{ overflow: 'auto' }} className="h-44">
           {lobbyData.players.map((player) => (
-            <PlayerComponent player={player} />
+            <PlayerComponent player={player} key={player.username} />
           ))}
         </List>
       </Box>

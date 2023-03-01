@@ -1,8 +1,14 @@
 import { ArenaUser, IGameArena } from './arena.interface';
 import { UserProfile } from '@splash/types';
 import { Socket } from 'socket.io';
-import { WrongWayRacerArenaError } from '../wrong-way-racer/arena/wrong-way-racer.arena';
 import { ILogManager } from '@splash/logger';
+
+export class ArenaError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ArenaError';
+  }
+}
 
 class GameArena implements IGameArena {
   private readonly _arenaId: string;
@@ -29,9 +35,7 @@ class GameArena implements IGameArena {
     const activeUser = this._connectedUsers.find((user) => user.username === connectingUser.username);
     if (activeUser) {
       this._logger?.debug(`Connected users list: ${JSON.stringify(this._connectedUsers)}`);
-      throw new WrongWayRacerArenaError(
-        `Trying to connect already connected user ${JSON.stringify(connectingUser)}`
-      );
+      throw new ArenaError(`Trying to connect already connected user ${JSON.stringify(connectingUser)}`);
     }
 
     this._connectedUsers.push({ ...connectingUser, socket });
@@ -51,9 +55,7 @@ class GameArena implements IGameArena {
       (user) => user.username === disconnectingUser.username
     );
     if (activeUserIndex < 0) {
-      throw new WrongWayRacerArenaError(
-        `Trying to disconnect not connected user ${JSON.stringify(disconnectingUser)}`
-      );
+      throw new ArenaError(`Trying to disconnect not connected user ${JSON.stringify(disconnectingUser)}`);
     }
 
     const socket = this._connectedUsers[activeUserIndex].socket;

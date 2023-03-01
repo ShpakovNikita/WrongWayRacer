@@ -4,6 +4,11 @@ import { WrongWayRacerSprites } from '@/context/WrongWayRacer/WrongWayRacer.reso
 import { useWrongWayRacerStore } from '@/context/WrongWayRacer';
 import * as PIXI from 'pixi.js';
 
+/**
+ * React PIXI js Sky Component for Wrong Way Racer scene
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ */
 const Sky = ({ width, height }: { width: number; height: number }) => {
   const { resources } = useWrongWayRacerStore();
   const skyTexture = resources[WrongWayRacerSprites.sky] as PIXI.BaseTexture;

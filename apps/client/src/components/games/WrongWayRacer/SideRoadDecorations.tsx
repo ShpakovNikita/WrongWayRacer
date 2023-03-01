@@ -43,10 +43,10 @@ const getDecorationParams = ({
 
 /**
  * Enemy Car PIXI.Js render component
- * @param width: Viewport's width
- * @param height: Viewport's height
- * @param road: Current road, from left to right's
- * @param distance: Distance between 0 and 1, with 0 is closest to camera
+ * @param width: number - viewport's width
+ * @param height: number - viewport's height
+ * @param road: number - current road, from left to right's
+ * @param distance: number - distance between 0 and 1, with 0 is closest to camera
  */
 const SideRoadDecorations = ({ width, height }: { width: number; height: number }) => {
   const { globalTimer } = useWrongWayRacerStore();

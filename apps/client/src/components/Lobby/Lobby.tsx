@@ -1,7 +1,4 @@
-import { HTMLAttributes } from 'react';
-import { Grid } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
+import { Grid, GridProps } from '@mui/material';
 import CenterColumn from '@/components/Lobby/MainPanel/MainPanel';
 import { useLobbyStore } from '@/context';
 import { useEffectOnce } from '@/utils/useEffectOnce';
@@ -9,15 +6,11 @@ import { observer } from 'mobx-react-lite';
 import LadderBoard from '@/components/Lobby/LadderBoard/LadderBoard';
 import PlayerRoomBoard from '@/components/Lobby/PlayersRoomBoard/PlayerRoomBoard';
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary
-}));
-
-const Lobby = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => {
+/**
+ * Lobby control panel with general lobby info and controls
+ * @param props: MUI GridProps
+ */
+const Lobby = (props: GridProps) => {
   const { activateStore, deactivateStore } = useLobbyStore();
 
   useEffectOnce(() => {
@@ -28,14 +21,14 @@ const Lobby = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => {
   });
 
   return (
-    <Grid container spacing={3} className={`${className}`}>
-      <Grid item xs={3.5}>
+    <Grid container spacing={3} {...props}>
+      <Grid item xs={12} md={3.5}>
         <LadderBoard />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={12} md={5}>
         <CenterColumn />
       </Grid>
-      <Grid item xs={3.5}>
+      <Grid item xs={12} md={3.5}>
         <PlayerRoomBoard />
       </Grid>
     </Grid>

@@ -6,6 +6,14 @@ import { CircularProgress } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffectOnce } from '@/utils/useEffectOnce';
 
+/**
+ * Wrong Way Racer game screen, that displays loader and the game itself. Requires WrongWayRacerProvider context
+ * @param options: PIXI.ApplicationOptions - pixi app options for initialized app
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ * @param className: string - css classnames
+ * @param props: _ReactPixi.IStage Props
+ */
 const WrongWayRacer = ({
   options,
   width,

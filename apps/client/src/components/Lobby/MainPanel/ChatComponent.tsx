@@ -1,20 +1,26 @@
 import * as React from 'react';
-import List from '@mui/material/List';
+import List, { ListProps } from '@mui/material/List';
 import { useLobbyStore } from '@/context';
 import { ListItem } from '@mui/material';
 import ChatMessage from '@/components/Lobby/MainPanel/ChatMessage';
 
-export default function ChatComponent() {
+/**
+ * Lobby chat component that displays current chat messages
+ * @param className: string - css classnames
+ * @param props: MUI ListProps
+ */
+export default function ChatComponent({ className, ...props }: ListProps) {
   const { lobbyData } = useLobbyStore();
 
   return (
     <List
       dense={true}
-      sx={{ maxHeight: '100vh', overflow: 'auto' }}
-      className="border-slate-400 bg-black/50 border-2 rounded-xl"
+      sx={{ overflow: 'auto' }}
+      className={`${className} border-slate-400 bg-black/50 border-2 rounded-xl h-44`}
+      {...props}
     >
       {lobbyData.chat.map((message) => (
-        <ListItem className="py-1">
+        <ListItem className="py-1" key={message.id}>
           <ChatMessage message={message} />
         </ListItem>
       ))}

@@ -5,6 +5,11 @@ import { PrimaryButton } from '@/components/ui';
 import PlayersComponent from '@/components/Lobby/MainPanel/ChatComponent';
 import { useCallback } from 'react';
 
+/**
+ * React component for lobby's main panel, that have Start Racing button, Chat messages and chat typing prompt
+ * @param className: string - css classnames
+ * @param props: MUI BoxProps
+ */
 const MainPanel = ({ className, ...props }: BoxProps) => {
   const { startGame, loading, inArena, connected } = useLobbyStore();
   const startRacingButtonDisabled = !connected || inArena || loading;

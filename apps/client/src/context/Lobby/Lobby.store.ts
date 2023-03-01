@@ -9,7 +9,7 @@ enableStaticRendering(typeof window === 'undefined');
 
 const gameSpeed = 2;
 
-export default class LobbyStore implements ILobbyControllerDelegate {
+class LobbyStore implements ILobbyControllerDelegate {
   private _loading = true;
   private _inArena = false;
 
@@ -93,4 +93,4 @@ export default class LobbyStore implements ILobbyControllerDelegate {
   };
 }
 
-export { LobbyStore };
+export default LobbyStore;

@@ -1,16 +1,17 @@
-import { HTMLAttributes } from 'react';
 import * as React from 'react';
-import { LadderPlace, Player } from '@/context/Lobby/Lobby.data';
+import { LadderPlace } from '@/context/Lobby/Lobby.data';
 import { getMinutesAndSecondsTime, nthFormat } from '@/utils/string';
-import { Box, Typography } from '@mui/material';
+import { Box, BoxProps, Typography } from '@mui/material';
 
-const LadderRow = ({
-  className,
-  ladder,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & { ladder: LadderPlace }) => {
+/**
+ * React component that displays current player ladder stats, like place, username, and time
+ * @param className: string - css classnames
+ * @param ladder: LadderPlace - passed player's ladder statistics
+ * @param props: MUI BoxProps
+ */
+const LadderRow = ({ className, ladder, ...props }: BoxProps & { ladder: LadderPlace }) => {
   return (
-    <Box className="flex flex-row py-0 px-3 items-center">
+    <Box className={`${className} flex flex-row py-0 px-3 items-center`} {...props}>
       <Typography variant="subtitle2" className="w-full">
         {ladder.player.username}
       </Typography>

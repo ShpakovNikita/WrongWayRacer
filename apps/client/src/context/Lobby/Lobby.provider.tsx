@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import React, { createContext, useContext } from 'react';
 
-import { LobbyStore } from './Lobby.store';
+import LobbyStore from './Lobby.store';
 
 const StoreContext = createContext<LobbyStore | null>(null);
 

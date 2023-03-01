@@ -9,6 +9,11 @@ const getExplosionOffset = (playerRoad: number, carWidth: number) => {
   return playerRoad === 0 ? -carWidth : playerRoad === 2 ? carWidth : 0;
 };
 
+/**
+ * React PIXI js Player Explosion Component for Wrong Way Racer scene, displaying explosion animation once
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ */
 const PlayerExplosion = ({ width, height }: { width: number; height: number }) => {
   const wrongWayRacerStore = useWrongWayRacerStore();
   const { resources, playerExplodeAnimationPlaying, playerRoad } = wrongWayRacerStore;

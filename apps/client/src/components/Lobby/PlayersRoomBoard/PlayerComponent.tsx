@@ -5,6 +5,12 @@ import ListItemText from '@mui/material/ListItemText';
 import * as React from 'react';
 import { Player } from '@/context/Lobby/Lobby.data';
 
+/**
+ * React component, that displays Player avatar and username
+ * @param className: string - css classnames
+ * @param player: Player - passed player info
+ * @param props: MUI ListItemProps
+ */
 const PlayerComponent = ({ className, player, ...props }: ListItemProps & { player: Player }) => {
   return (
     <ListItem alignItems="center" {...props}>

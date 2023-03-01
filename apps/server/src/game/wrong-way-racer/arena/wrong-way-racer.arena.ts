@@ -24,13 +24,6 @@ type GameUser = ArenaUser & {
   deathTime?: number;
 };
 
-export class WrongWayRacerArenaError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'WrongWayRacerArenaError';
-  }
-}
-
 export class WrongWayRacerArena extends GameArena {
   private readonly _activeUsers: GameUser[] = [];
   private readonly _io: Server;

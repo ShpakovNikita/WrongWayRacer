@@ -44,12 +44,6 @@ class GameServer {
     return this._users[id];
   };
 
-  public getUserByUsername = (username: string): UserProfile | undefined => {
-    return Object.values(this._users)
-      .filter((user) => username === user.username)
-      .at(0);
-  };
-
   public addGameArena = (arena: IGameArena): void => {
     if (this._gameArenas[arena.arenaId] === undefined) {
       this._gameArenas[arena.arenaId] = arena;

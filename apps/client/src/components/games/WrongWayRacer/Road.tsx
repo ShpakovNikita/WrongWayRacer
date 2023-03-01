@@ -5,6 +5,11 @@ import * as PIXI from 'pixi.js';
 import FullWidthSprite from '@/components/games/WrongWayRacer/FullWidthSprite';
 import { useRoadParams } from '@/components/games/WrongWayRacer/hooks';
 
+/**
+ * React PIXI js Road Component for Wrong Way Racer scene
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ */
 const Road = ({ width, height }: { width: number; height: number }) => {
   const { roadScaleY, roadHeight } = useRoadParams(width, height, 0);
 

@@ -1,15 +1,17 @@
-# @splash test taskmonorepo
+# @splash test assessment monorepo
 
 This monorepo serves different applications from @splash ecosystem for wrong-way-racer assessment.
 
-- `client` - client application for lobby and wrong way racer client
+- `client` - client application for lobby and wrong way racer game
 - `server` - backend application for our client app
 
-The main purpose on using monorepo for this task was easily managing shared packages for types between node js and next js app, and the main reason is sharing main game logic in one package, so we can run the same code on server and on client (using server's event as source of truth, fetching the most critical and necessary data on server, and running the same code on client for filling the gaps between packets sending, aka game logic prediction, providing the smooth gaming experience)
+For proper application work, you need to start both of the apps simultaneously
+
+The main purpose on using monorepo for this task was easily managing shared packages for types between node js and next js app and sharing main game logic in one package, so we can run the same code on server and on client (using server's event as source of truth, fetching the most critical and necessary data on server, and running the same code on client for filling the gaps between packets sending, aka game logic prediction, providing the smooth gaming experience)
 
 Also, it's quite easy to setup whole environment and proceed with some Kubernetes or Docker Compose file for running everything anywhere using small subset of commands.
 
-There is also known assumptions in current implementation of the game, most of them marked as TODO, and not so perfect repo organization, which should be fine for given time
+There is also known assumptions in current implementation of the game, most of them marked as TODO, and not optimal monorepo organization (not using rigs, utilizing heft properly, not properly configured lint (and multiple warnings as result), etc.), which should be fine for given time
 
 ## General monorepo info
 
@@ -38,6 +40,14 @@ Then run this to update rush monorepo (and run this set of commands each time yo
 ### ▶️ Run (Short Summary)
 
 For now, it requires two terminals to run clent and server separately.
+
+At first, create `.env` files for each project, using:
+
+```angular2html
+cp .env.example .env
+```
+
+Then, proceed with building and running apps:
 
 ```angular2html
 rush update
@@ -77,16 +87,6 @@ Then run tests for all packages and apps:
 rush test
 ```
 
-### ❗️Global actions vs local action
-
-Rush support both global actions (i.e runs for all packages) and local actions (runs in the selected repo). Sometimes you don't need to run every test or build/serve every package/app, so you may run each of the following commands in a locally selected package:
-
-- `rushx build`
-- `rushx clean`
-- `rushx test`
-
-And also `rushx` + some defined script in `package.json`
-
 ## ❕ Basic projects info
 
 All projects placed in `apps/` folder. More info about specific project could be found in their `README.md` file. Here are some general knowledge:
@@ -103,5 +103,5 @@ rushx dev
 Each project has it's own environment. In `.env.example` you may find example keys that are used by the project. Just copy it to `.env` and fill with the corresponding values.
 
 ```angular2html
-cd .env.example .env
+cp .env.example .env
 ```

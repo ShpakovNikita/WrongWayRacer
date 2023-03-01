@@ -6,6 +6,7 @@ export type Player = {
 };
 
 export type ChatMessage = {
+  id: number;
   player: Player;
   message: string;
 };
@@ -39,6 +40,21 @@ const player3: Player = {
   avatarSrc: 'https://placebeard.it/102/102'
 };
 
+const player4: Player = {
+  username: 'Leo Aminoff',
+  avatarSrc: 'https://placebeard.it/103/103'
+};
+
+const player5: Player = {
+  username: 'Livia Bator',
+  avatarSrc: 'https://placebeard.it/104/104'
+};
+
+const player6: Player = {
+  username: 'Ahmad Dias',
+  avatarSrc: 'https://placebeard.it/105/105'
+};
+
 const ladder: Ladder = {
   top: [
     {
@@ -52,17 +68,17 @@ const ladder: Ladder = {
       rank: 2
     },
     {
-      player: player1,
+      player: player4,
       time: 2 * 60 + 54,
       rank: 3
     },
     {
-      player: player2,
+      player: player5,
       time: 3 * 60 + 22,
       rank: 4
     },
     {
-      player: player1,
+      player: player6,
       time: 3 * 60 + 24,
       rank: 5
     }
@@ -77,22 +93,52 @@ const ladder: Ladder = {
 
 const chat: ChatMessage[] = [
   {
+    id: 1,
     player: player1,
     message: 'how you doing mate'
   },
   {
+    id: 2,
     player: player2,
     message: 'Not bad'
   },
   {
+    id: 3,
     player: player1,
     message: 'did you win last round'
   },
   {
+    id: 4,
     player: player2,
     message: 'Yes, headed for 2:30'
   },
   {
+    id: 5,
+    player: player1,
+    message: 'wow Cool!'
+  },
+  {
+    id: 6,
+    player: player1,
+    message: 'how you doing mate'
+  },
+  {
+    id: 7,
+    player: player2,
+    message: 'Not bad'
+  },
+  {
+    id: 8,
+    player: player1,
+    message: 'did you win last round'
+  },
+  {
+    id: 9,
+    player: player2,
+    message: 'Yes, headed for 2:30'
+  },
+  {
+    id: 10,
     player: player1,
     message: 'wow Cool!'
   }
@@ -101,18 +147,9 @@ const chat: ChatMessage[] = [
 const roomPlayers: Player[] = [
   player1,
   player2,
-  {
-    username: 'Leo Aminoff',
-    avatarSrc: 'https://placebeard.it/103/103'
-  },
-  {
-    username: 'Livia Bator',
-    avatarSrc: 'https://placebeard.it/104/104'
-  },
-  {
-    username: 'Ahmad Dias',
-    avatarSrc: 'https://placebeard.it/105/105'
-  },
+  player4,
+  player5,
+  player6,
   {
     username: 'Brandon Dokidis',
     avatarSrc: 'https://placebeard.it/106/106'

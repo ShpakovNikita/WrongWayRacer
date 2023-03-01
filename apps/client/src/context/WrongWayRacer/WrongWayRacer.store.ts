@@ -30,9 +30,7 @@ enableStaticRendering(typeof window === 'undefined');
 
 const gameSpeed = 2;
 
-export default class WrongWayRacerStore
-  implements IWrongWayRacerControllerDelegate, IWrongWayRacerInputDelegate
-{
+class WrongWayRacerStore implements IWrongWayRacerControllerDelegate, IWrongWayRacerInputDelegate {
   private _loading = true;
 
   private _playerExplodeAnimationPlaying = false;
@@ -222,4 +220,4 @@ export default class WrongWayRacerStore
   };
 }
 
-export { WrongWayRacerStore };
+export default WrongWayRacerStore;

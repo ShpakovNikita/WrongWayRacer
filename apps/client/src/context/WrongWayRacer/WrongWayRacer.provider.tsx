@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import React, { createContext, useContext } from 'react';
 
-import { WrongWayRacerStore } from './WrongWayRacer.store';
+import WrongWayRacerStore from './WrongWayRacer.store';
 
 const StoreContext = createContext<WrongWayRacerStore | null>(null);
 

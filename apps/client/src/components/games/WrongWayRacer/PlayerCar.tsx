@@ -21,6 +21,11 @@ const roadToParams = (road: number, carWidth: number) => {
   }
 };
 
+/**
+ * React PIXI js Player Car Component for Wrong Way Racer scene
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ */
 const PlayerCar = ({ width, height }: { width: number; height: number }) => {
   const { resources, playerRoad } = useWrongWayRacerStore();
   const motion = useCarEngineMotion({ height });

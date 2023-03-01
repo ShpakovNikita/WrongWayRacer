@@ -7,7 +7,11 @@ const Filters = withFilters(Container, {
   shadow: DropShadowFilter
 });
 
-const GameTimer = ({ width, height }: { width: number; height: number }) => {
+/**
+ * React PIXI js Game Timer Component for Wrong Way Racer scene
+ * @param width: number - current viewport width
+ */
+const GameTimer = ({ width }: { width: number }) => {
   const { globalTimer } = useWrongWayRacerStore();
   const date = new Date(0);
   date.setMilliseconds(globalTimer * 1000); // specify value for SECONDS here

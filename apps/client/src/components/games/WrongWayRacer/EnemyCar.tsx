@@ -62,10 +62,10 @@ const roadToParams = (road: number, carWidth: number) => {
 
 /**
  * Enemy Car PIXI.Js render component
- * @param width: Viewport's width
- * @param height: Viewport's height
- * @param road: Current road, from left to right's
- * @param distance: Distance between 0 and 1, with 0 is closest to camera
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ * @param road: number - current road, from left to right's
+ * @param distance: number - distance between 0 and 1, with 0 is closest to camera
  */
 const EnemyCar = ({
   width,

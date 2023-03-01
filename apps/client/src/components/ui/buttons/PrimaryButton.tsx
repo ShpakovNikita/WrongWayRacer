@@ -8,6 +8,11 @@ const mapSizeToStyle = {
   lg: 'px-6 py-3'
 };
 
+/**
+ * MUI Styled button wrapper, that applies our game styling to MUI Base button.
+ * @param size?: 'sm' | 'md' | 'lg' - button size styling
+ * @param props: MUI ButtonUnstyledProps
+ */
 const PrimaryButton = React.forwardRef(function Button(
   { size, ...props }: ButtonUnstyledProps & { size?: 'sm' | 'md' | 'lg' },
   ref: React.ForwardedRef<HTMLButtonElement>

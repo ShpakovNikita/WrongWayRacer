@@ -12,9 +12,7 @@
     "dev": "nodemon",
     "start:prod": "node lib/main",
     "deploy": "pnpm ci && build && start:prod",
-    "test": "heft test",
-    "test:watch": "heft test --watch",
-    "test:cov": "heft test --coverage"
+    "test": "jest test"
   },
   "dependencies": {
     "@splash/logger": "workspace:*",

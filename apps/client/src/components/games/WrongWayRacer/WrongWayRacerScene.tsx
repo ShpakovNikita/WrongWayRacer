@@ -8,6 +8,11 @@ import SideRoadDecorations from '@/components/games/WrongWayRacer/SideRoadDecora
 import Fog from '@/components/games/WrongWayRacer/Fog';
 import { Container } from '@pixi/react';
 
+/**
+ * Wrong Way Racer PIXI.js main scene component that builds whole PIXI scene
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ */
 const WrongWayRacerScene = ({ width, height }: { width: number; height: number }) => {
   return (
     <>

@@ -12,7 +12,7 @@ class LoggerConsole {
   public log = (message?: string): void => {
     if (this._isDEV) {
       console.log(message);
-    } // Some useful production handlers
+    } // TODO: else - some useful production handlers
   };
 
   public debug = (message?: string): void => {

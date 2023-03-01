@@ -14,9 +14,9 @@ export type RoadParamsResult = {
 
 /**
  * Get road params react hook
- * @param width: Viewport width
- * @param height: Viewport height
- * @param distance: Distance to camera
+ * @param width: number - current viewport width
+ * @param height: number - current viewport height
+ * @param distance: number - distance between 0 and 1, with 0 is closest to camera
  */
 export const useRoadParams = (width: number, height: number, distance: number): RoadParamsResult => {
   const { resources } = useWrongWayRacerStore();
